@@ -19,9 +19,9 @@ to install dependencies. In order install these dependencies, you will also need
   npm install -g ganache-cli
   ```
 
-2. Download the box.
+2. Clone the repository
   ```bash
-  truffle unbox Quintor/angular-truffle-box
+  git clone git@github.com:taptrust/taptrust-wallet-contracts.git
   ```
 
 3. Run your Ethereum client. For Ganache CLI:
@@ -32,7 +32,8 @@ Note the mnemonic 12-word phrase printed on startup, you will need it later.
 
 4. Compile and migrate your contracts.
   ```bash
-  truffle compile && truffle migrate
+  truffle compile 
+  truffle migrate
   ```
 
 ## Configuration
@@ -48,7 +49,7 @@ Note the mnemonic 12-word phrase printed on startup, you will need it later.
 
 1. Run the app using Angular CLI:
   ```bash
-  npm start
+  npm run start
   ```
 The app is now served on localhost:4200
 
