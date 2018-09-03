@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 /**
- * @title Proxy Wallet
+ * @title Proxy Wallet.
  * @author Tap Trust
  * @dev Proof of concept implementation of a Solidity proxy wallet.
  * Unlike most authentication in Ethereum contracts,
@@ -15,17 +15,58 @@ contract ProxyWallet {
   // List of administrator addresses
   address[] public administrators;
 
-  // Owner username
+  // Owner Username
   string private ownerUsername;
 
   // Owner Public Key
   string private ownerPublicKey;
 
   /**
-   * Proxy Wallet constructor
+   * @dev Requires that a valid administrator address was provided.
+   * @param _admin address Administrator address.
    */
-  constructor(address[] _administrators) public {
+  modifier onlyValidAdministrator(address _admin) {
+    require(_admin != address(0));
+    _;
+  }
+
+  /**
+   * @dev Requires that a valid administrator list was provided.
+   * @param _administrators address[] List of administrators.
+   */
+  modifier onlyValidAdministrators(address[] _administrators) {
     require(_administrators.length > 0);
+    _;
+  }
+
+  /**
+   * @dev Requires that a valid username of the user was provided.
+   * @param _username string Username of the user.
+   */
+  modifier onlyValidUsername(string _username) {
+    require(bytes(_username).length > 0);
+    _;
+  }
+
+  /**
+   * @dev Requires that a valid public key of the user was provided.
+   * @param _publicKey string Public key of the user.
+   */
+  modifier onlyValidPublicKey(string _publicKey) {
+    require(bytes(_publicKey).length > 0);
+    _;
+  }
+
+  /**
+   * @dev Proxy Wallet constructor.
+   * @param _administrators address[] List of administrator addresses.
+   * @param _username string Username of the user.
+   * @param _publicKey string Public key of the user.
+   */
+  constructor(address[] _administrators, string _username, string _publicKey) onlyValidAdministrators(_administrators) public {
+    setOwnerUsername(_username);
+
+    setOwnerPublicKey(_publicKey);
 
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
@@ -33,12 +74,26 @@ contract ProxyWallet {
   }
 
   /**
-   * @dev Add a new administrator to the contract.
-   * @param _admin The address of the administrator to add.
+   * @dev Set owner username.
+   * @param _username Username of the user.
    */
-  function addAdministrator(address _admin) internal {
-    require(_admin != address(0));
+  function setOwnerUsername(string _username) onlyValidUsername(_username) internal {
+    ownerUsername = _username;
+  }
 
+  /**
+   * @dev Set owner public key.
+   * @param _publicKey Public key of the user.
+   */
+  function setOwnerPublicKey(string _publicKey) onlyValidPublicKey(_publicKey) internal {
+    ownerPublicKey = _publicKey;
+  }
+
+  /**
+   * @dev Add a new administrator to the contract.
+   * @param _admin address The address of the administrator to add.
+   */
+  function addAdministrator(address _admin) onlyValidAdministrator(_admin) internal {
     administrators.push(_admin);
   }
 }
