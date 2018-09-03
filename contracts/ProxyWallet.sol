@@ -15,6 +15,15 @@ contract ProxyWallet {
   // List of administrator addresses
   address[] public administrators;
 
+  // Owner username
+  string private ownerUsername;
+
+  // Owner Public Key
+  string private ownerPublicKey;
+
+  /**
+   * Proxy Wallet constructor
+   */
   constructor(address[] _administrators) public {
     require(_administrators.length > 0);
 
