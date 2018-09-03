@@ -58,6 +58,21 @@ contract ProxyWallet {
   }
 
   /**
+   * Fired when username is set.
+   */
+  event UsernameSet(address indexed from, string username);
+
+  /**
+   * Fired when public key is set.
+   */
+  event PublicKeySet(address indexed from, string publicKey);
+
+  /**
+   * Fired when administrator is added.
+   */
+  event AdministratorAdded(address indexed admin);
+
+  /**
    * @dev Proxy Wallet constructor.
    * @param _administrators address[] List of administrator addresses.
    * @param _username string Username of the user.
@@ -79,6 +94,7 @@ contract ProxyWallet {
    */
   function setOwnerUsername(string _username) onlyValidUsername(_username) internal {
     ownerUsername = _username;
+    emit UsernameSet(msg.sender, _username);
   }
 
   /**
@@ -87,6 +103,7 @@ contract ProxyWallet {
    */
   function setOwnerPublicKey(string _publicKey) onlyValidPublicKey(_publicKey) internal {
     ownerPublicKey = _publicKey;
+    emit PublicKeySet(msg.sender, _publicKey);
   }
 
   /**
@@ -95,5 +112,6 @@ contract ProxyWallet {
    */
   function addAdministrator(address _admin) onlyValidAdministrator(_admin) internal {
     administrators.push(_admin);
+    emit AdministratorAdded(_admin);
   }
 }
