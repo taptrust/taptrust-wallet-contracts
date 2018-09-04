@@ -1,5 +1,5 @@
 let ProxyWallet = artifacts.require('ProxyWallet');
-
+let util = require('ethereumjs-util');
 let Web3 = require('web3');
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
 let node = web3.version.node;
@@ -8,15 +8,13 @@ console.log('Using node=' + node);
 let testrpc = false;
 let geth = false;
 let parity = false;
-let ganache = true;
+let ganache = false;
 
 if (node === 'Geth') geth = true;
 if (node === 'EthereumJS TestRPC') testrpc = true;
 if (node === 'Ganache') ganache = true;
 if (node === 'Parity') parity = true;
 console.log('testrpc=' + ganache);
-
-let util = require('ethereumjs-util');
 
 function toHex(str) {
   let hex = '';
@@ -124,7 +122,7 @@ contract('Initialize ProxyWallet Smart Contract', function (accounts) {
   it('Recover the address and check signature.', function () {
     let address = accounts[0];
     console.log('Owner=' + address);
-    const message = 'Lorem ipsum mark mark dolor sit amet, consectetur adipiscing elit. Tubulum fuisse, qua illum, cuius is condemnatus est rogatione, P. Eaedem res maneant alio modo.';
+    const message = 'Lorem ipsum mark mark dolor sit';
 
     //let sig = await generateSignature(address, message);
     //let ret = await verifySignature(address, message, sig);
@@ -132,10 +130,12 @@ contract('Initialize ProxyWallet Smart Contract', function (accounts) {
 
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
+      console.log('sig =>', address);
+      console.log('sig =>', message);
       let sig = await generateSignature(address, message);
       console.log('sig =>', sig);
-      // let ret = await verifySignature(address, message, sig);
-      // return ProxyWalletInstance.recoverAddress(ret.encoded, ret.v, ret.r, ret.s)
+      let ret = await verifySignature(address, message, sig);
+      return ProxyWalletInstance.recoverAddress(ret.encoded, ret.v, ret.r, ret.s)
     }).then((data) => {
       console.log(data);
     })
