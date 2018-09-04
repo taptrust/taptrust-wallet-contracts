@@ -127,7 +127,7 @@ contract ProxyWallet {
    * @dev Add a new administrator to the contract.
    * @param _admin address The address of the administrator to add.
    */
-  function addAdministrator(address _admin) onlyValidAdministrator(_admin) internal {
+  function addAdministrator(address _admin) isOwner public {
     require(!isAdministrator[_admin]);
     administrators.push(_admin);
     isAdministrator[_admin] = true;
@@ -138,7 +138,7 @@ contract ProxyWallet {
    * @dev Get all administrator addresses.
    * @return address[] List of all administrators.
    */
-  function getAllAdministrators() public view returns (address[]){
+  function getAllAdministrators() public view returns (address[]) {
     return administrators;
   }
 
@@ -165,5 +165,13 @@ contract ProxyWallet {
    */
   function isSignedMessage(address _address, bytes32 _messageHash, uint8 v, bytes32 r, bytes32 s) internal pure returns (bool) {
     return ecrecover(_messageHash, v, r, s) == _address;
+  }
+
+  /**
+   * @dev Destroy the contract.
+   */
+  function kill() public {
+    require(msg.sender == owner);
+    selfdestruct(msg.sender);
   }
 }

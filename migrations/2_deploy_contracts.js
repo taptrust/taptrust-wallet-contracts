@@ -1,4 +1,4 @@
-let ProxyWallet = artifacts.require('./ProxyWallet.sol');
+let ProxyWallet = artifacts.require('ProxyWallet');
 
 module.exports = function (deployer) {
   const admin1 = '0x23159c0f232335f0211Ce0443BaE38870dB2F18B';
