@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import * as contract from 'truffle-contract';
 import {Subject} from 'rxjs/Rx';
+
 declare let require: any;
 const Web3 = require('web3');
-
 
 declare let window: any;
 

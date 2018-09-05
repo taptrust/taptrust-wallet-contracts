@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Web3Service} from '../../util/web3.service';
-import { MatSnackBar } from '@angular/material';
+import {MatSnackBar} from '@angular/material';
 
 declare let require: any;
 const metacoin_artifacts = require('../../../../build/contracts/MetaCoin.json');

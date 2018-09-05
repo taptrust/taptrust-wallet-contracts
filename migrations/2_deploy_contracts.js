@@ -1,3 +1,5 @@
+let ConvertLib = artifacts.require('ConvertLib');
+let MetaCoin = artifacts.require('MetaCoin');
 let ProxyWallet = artifacts.require('ProxyWallet');
 
 module.exports = function (deployer) {
@@ -17,6 +19,10 @@ module.exports = function (deployer) {
 
   const username = 'test_username';
   const publicKey = '38bf319433a9d9188fcfd213c32ccb7b93465d67deadf896f644058c3a620d2c';
+
+  deployer.deploy(ConvertLib);
+  deployer.link(ConvertLib, MetaCoin);
+  deployer.deploy(MetaCoin);
 
   deployer.deploy(ProxyWallet,
     administrators,
