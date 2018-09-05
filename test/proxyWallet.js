@@ -131,10 +131,6 @@ contract('Initialize ProxyWallet Smart Contract', function (accounts) {
     console.log('Owner=' + address);
     const message = 'Lorem ipsum mark mark dolor sit';
 
-    //let sig = await generateSignature(address, message);
-    //let ret = await verifySignature(address, message, sig);
-    //let sig, ret;
-
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
       console.log('sig =>', address);
@@ -156,33 +152,4 @@ contract('Initialize ProxyWallet Smart Contract', function (accounts) {
       console.log(web3.utils.fromWei(balance));
     })
   })
-
-  /*it('Recover the address and check signature.', function () {
-    let addr = accounts[0];
-    let msg = 'I really did make this message';
-    console.log(msg, addr);
-    let signature = web3.eth.sign(addr, '0x' + toHex(msg));
-    console.log(signature);
-    signature = signature.substr(2);
-    let r = '0x' + signature.slice(0, 64);
-    let s = '0x' + signature.slice(64, 128);
-    let v = '0x' + signature.slice(128, 130);
-    let v_decimal = web3.toDecimal(v);
-    let fixed_msg = `\x19Ethereum Signed Message:\n${msg.length}${msg}`;
-    let fixed_msg_sha = web3.sha3(fixed_msg);
-    const message = web3.utils.sha3('\x19Ethereum Signed Message:\n32' + 'Message to sign here.');
-    const unlockedAccount = accounts[0];
-    signature = web3.eth.sign(unlockedAccount, message).slice(2);
-    console.log(signature);
-    r = signature.slice(0, 64);
-    s = '0x' + signature.slice(64, 128);
-    v = web3.toDecimal(signature.slice(128, 130)) + 27;
-    return ProxyWallet.deployed().then(function (instance) {
-      ProxyWalletInstance = instance;
-      return ProxyWalletInstance.recoverAddress(message, v, r, s);
-    }).then((receipt) => {
-      console.log(unlockedAccount);
-      console.log(receipt);
-    })
-  })*/
 });
