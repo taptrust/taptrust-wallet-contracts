@@ -37,8 +37,9 @@ async function generateSignature(address, message) {
   if (ganache) {
     encoded = web3.utils.sha3(message);
   }
+  encoded = web3.utils.sha3(message);
   console.log('  encoded message=' + encoded);
-  return web3.eth.sign(address, encoded);
+  return web3.eth.sign(encoded, address);
 }
 
 async function verifySignature(address, message, sig) {
@@ -47,19 +48,20 @@ async function verifySignature(address, message, sig) {
   let encoded;
   if (testrpc) {
     //encoded = web3.sha3(message);
-    encoded = util.hashPersonalMessage(util.toBuffer(web3.sha3(message)))
+    encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
   } else if (geth || parity) {
     //encoded = web3.sha3('\x19Ethereum Signed Message:\n32' + web3.sha3(message).substr(2));
-    encoded = util.hashPersonalMessage(util.toBuffer(web3.sha3(message)))
+    encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
   } else if (ganache) {
-    encoded = util.hashPersonalMessage(util.toBuffer(web3.sha3(message)))
+    encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
   }
+  encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
   console.log('  encoded message=' + encoded.toString('hex'));
   if (sig.slice(0, 2) === '0x') sig = sig.substr(2);
   if (testrpc || geth) {
     let r = '0x' + sig.substr(0, 64);
     let s = '0x' + sig.substr(64, 64);
-    let v = web3.toDecimal(sig.substr(128, 2)) + 27;
+    let v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
   }
   if (parity) {
     v = '0x' + sig.substr(0, 2);
@@ -69,8 +71,13 @@ async function verifySignature(address, message, sig) {
   if (ganache) {
     r = '0x' + sig.substr(0, 64);
     s = '0x' + sig.substr(64, 64);
-    v = web3.toDecimal(sig.substr(128, 2)) + 27;
+    v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
   }
+
+  r = '0x' + sig.substr(0, 64);
+  s = '0x' + sig.substr(64, 64);
+  v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
+
   console.log('  r: ' + r);
   console.log('  s: ' + s);
   console.log('  v: ' + v);

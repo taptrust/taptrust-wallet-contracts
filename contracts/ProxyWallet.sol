@@ -150,7 +150,7 @@ contract ProxyWallet {
    * @param s bytes32 Part of Signature validation.
    * @return address Returning address which signed the message.
    */
-  function recoverAddress(bytes32 _messageHash, uint8 v, bytes32 r, bytes32 s) internal pure returns (address) {
+  function recoverAddress(bytes32 _messageHash, uint8 v, bytes32 r, bytes32 s) public pure returns (address) {
     return ecrecover(_messageHash, v, r, s);
   }
 
