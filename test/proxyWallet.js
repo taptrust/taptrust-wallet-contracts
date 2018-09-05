@@ -102,7 +102,7 @@ contract('Initialize ProxyWallet Smart Contract', function (accounts) {
     })
   });
 
-  it('Check and save administrators account.', function () {
+  it('Check and save administrators account', function () {
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
       return ProxyWalletInstance.addAdministrator(accounts[2], {from: accounts[0]});
@@ -119,7 +119,7 @@ contract('Initialize ProxyWallet Smart Contract', function (accounts) {
     })
   });
 
-  it('Recover the address and check signature.', function () {
+  it('Recover the address and check signature', function () {
     let address = accounts[0];
     console.log('Owner=' + address);
     const message = 'Lorem ipsum mark mark dolor sit';
@@ -140,6 +140,15 @@ contract('Initialize ProxyWallet Smart Contract', function (accounts) {
       console.log(data);
     })
   });
+
+  it("Check account has ETH balance", function () {
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return web3.eth.getBalance(accounts[0]);
+    }).then((balance) => {
+      console.log(web3.utils.fromWei(balance));
+    })
+  })
 
   /*it('Recover the address and check signature.', function () {
     let addr = accounts[0];
