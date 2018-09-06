@@ -245,6 +245,14 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Get balance of the account.
+   * @return uint256 Balance of the account.
+   */
+  function getBalance() public view returns (uint256) {
+    return address(this).balance;
+  }
+
+  /**
    * @dev Destroy the contract.
    */
   function kill() isOwner public {
