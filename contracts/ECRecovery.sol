@@ -13,8 +13,7 @@ library ECRecovery {
    * @param _sig bytes signature, the signature is generated using web3.eth.sign().
    * @return address Recovered signed address
    */
-  function recover(bytes32 _hash, bytes _sig) internal pure returns (address)
-  {
+  function recover(bytes32 _hash, bytes _sig) public pure returns (address) {
     bytes32 r;
     bytes32 s;
     uint8 v;
@@ -51,8 +50,7 @@ library ECRecovery {
    * @param _hash bytes32 Hashed message which needs to be eth singed.
    * @return butes32 Encoded message.
    */
-  function toEthSignedMessageHash(bytes32 _hash) internal pure returns (bytes32)
-  {
+  function toEthSignedMessageHash(bytes32 _hash) public pure returns (bytes32) {
     // 32 is the length in bytes of hash,
     // enforced by the type signature above
     return keccak256(

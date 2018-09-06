@@ -1,5 +1,6 @@
 let ConvertLib = artifacts.require('ConvertLib');
 let MetaCoin = artifacts.require('MetaCoin');
+let ECRecovery = artifacts.require('ECRecovery');
 let ProxyWallet = artifacts.require('ProxyWallet');
 
 module.exports = function (deployer) {
@@ -23,6 +24,9 @@ module.exports = function (deployer) {
   deployer.deploy(ConvertLib);
   deployer.link(ConvertLib, MetaCoin);
   deployer.deploy(MetaCoin);
+
+  deployer.deploy(ECRecovery);
+  deployer.link(ECRecovery, ProxyWallet);
 
   deployer.deploy(ProxyWallet,
     administrators,
