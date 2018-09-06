@@ -94,6 +94,15 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Checks if account has funds.
+   * @param _address address Address of the account which balance needs to be checked.
+   */
+  modifier hasFunds(address _address) {
+    require(address(_address).balance > 0);
+    _;
+  }
+
+  /**
    * Fired when username is set.
    */
   event UsernameSet(address indexed from, string username);
@@ -111,7 +120,7 @@ contract ProxyWallet {
   /**
    * Fired when session data is added.
    */
-  event SessionDataAdded(address indexed admin);
+  event SessionDataAdded(address indexed deviceId, string indexed dataId);
 
   /**
    * @dev Proxy Wallet constructor.
@@ -166,6 +175,7 @@ contract ProxyWallet {
    */
   function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration) public {
     sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration);
+    emit SessionDataAdded(deviceId, dataId);
   }
 
   /**
@@ -246,10 +256,11 @@ contract ProxyWallet {
 
   /**
    * @dev Get balance of the account.
+   * @param _address address Address of account which balanced needs to be returned.
    * @return uint256 Balance of the account.
    */
-  function getBalance() public view returns (uint256) {
-    return address(this).balance;
+  function getBalance(address _address) public view returns (uint256) {
+    return address(_address).balance;
   }
 
   /**
