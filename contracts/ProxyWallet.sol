@@ -14,6 +14,9 @@ import './ECRecovery.sol';
  */
 contract ProxyWallet {
 
+  // Hooking up bytes32 with ERRecovery library
+  using ECRecovery for bytes32;
+
   // Owner of the contract
   address public owner;
 
@@ -217,7 +220,7 @@ contract ProxyWallet {
    * @return bytes32 Encoded message.
    */
   function signMessage(bytes32 _messageHash) public pure returns (bytes32) {
-    return ECRecovery.toEthSignedMessageHash(_messageHash);
+    return _messageHash.toEthSignedMessageHash();
   }
 
   /**
@@ -227,7 +230,7 @@ contract ProxyWallet {
    * @return address Returning address which signed the message.
    */
   function recoverAddress(bytes32 _messageHash, bytes _sig) public pure returns (address) {
-    return ECRecovery.recover(_messageHash, _sig);
+    return _messageHash.recover(_sig);
   }
 
   /**
