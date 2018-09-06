@@ -264,6 +264,16 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Check if the account has exact same balance like give balance.
+   * @param _address address Account address.
+   * @param _balance uint256 Give balance to compare with.
+   * @return True if the account balance has the exact same balance like give balance.
+   */
+  function checkIfAccountHasExactBalance(address _address, uint256 _balance) pure returns (bool) {
+    return getBalance(_address) == _balance;
+  }
+
+  /**
    * @dev Destroy the contract.
    */
   function kill() isOwner public {
