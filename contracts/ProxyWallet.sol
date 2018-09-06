@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import './ECRecovery.sol';
+import './SafeMath.sol';
 
 /**
  * @title Proxy Wallet.
@@ -14,11 +15,17 @@ import './ECRecovery.sol';
  */
 contract ProxyWallet {
 
+  // Using SafeMath library for math expressions
+  using SafeMath for uint256;
+
   // Hooking up bytes32 with ERRecovery library
   using ECRecovery for bytes32;
 
   // Owner of the contract
   address public owner;
+
+  // Session state
+  enum SessionState {Active, Closed}
 
   // Session data structure
   struct Data {
@@ -32,6 +39,7 @@ contract ProxyWallet {
     uint8 v;
     uint256 startTime;
     uint256 duration;
+    SessionState state;
   }
 
   // Session data instance
@@ -118,9 +126,14 @@ contract ProxyWallet {
   event AdministratorAdded(address indexed admin);
 
   /**
-   * Fired when session data is added.
+   * Fired when session data is added/changed
    */
-  event SessionDataAdded(address indexed deviceId, string indexed dataId);
+  event SessionEvent(address indexed deviceId, string indexed dataId, SessionState state);
+
+  /**
+   * Transfer event
+   */
+  event Transfer(address indexed from, address indexed to, uint256 value);
 
   /**
    * @dev Proxy Wallet constructor.
@@ -160,7 +173,7 @@ contract ProxyWallet {
   }
 
   /**
-   * @dev Add session data.
+   * @dev Add session data and start session
    * @param dataId string Data id value.
    * @param deviceId string Device id value.
    * @param first bytes32 First key.
@@ -174,8 +187,19 @@ contract ProxyWallet {
    * @param duration uint256 Session length value.
    */
   function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration) public {
-    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration);
-    emit SessionDataAdded(deviceId, dataId);
+    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active);
+    emit SessionEvent(deviceId, dataId, SessionState.Active);
+  }
+
+  /**
+   * @dev Close session.
+   * @param dataId string Data id value.
+   */
+  function closeSession(string dataId) isOwner public {
+    require(sessionData[dataId].deviceId != 0);
+    address deviceId = sessionData[dataId].deviceId;
+    delete sessionData[dataId];
+    emit SessionEvent(deviceId, dataId, SessionState.Closed);
   }
 
   /**
@@ -220,8 +244,8 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from session.
    * @return address, string, bytes32, uint256, uint256 Device id, subject, hashed data, start time and duration values form session.
    */
-  function getOtherSessionData(string dataId) public constant returns (address, string, bytes32, uint256, uint256)  {
-    return (sessionData[dataId].deviceId, sessionData[dataId].subject, sessionData[dataId].hashedData, sessionData[dataId].startTime, sessionData[dataId].duration);
+  function getOtherSessionData(string dataId) public constant returns (address, string, bytes32, uint256, uint256, SessionState)  {
+    return (sessionData[dataId].deviceId, sessionData[dataId].subject, sessionData[dataId].hashedData, sessionData[dataId].startTime, sessionData[dataId].duration, sessionData[dataId].state);
   }
 
   /**
@@ -269,8 +293,25 @@ contract ProxyWallet {
    * @param _balance uint256 Give balance to compare with.
    * @return True if the account balance has the exact same balance like give balance.
    */
-  function checkIfAccountHasExactBalance(address _address, uint256 _balance) pure returns (bool) {
+  function checkIfAccountHasExactBalance(address _address, uint256 _balance) public view returns (bool) {
     return getBalance(_address) == _balance;
+  }
+
+  /**
+   * @dev Transfer funds for a specified address.
+   * @param _to The address to transfer to.
+   * @param _value The amount to be transferred.
+   * @return True if the function was executed successfully.
+   */
+  function transfer(address _to, uint256 _value) public returns (bool) {
+    require(_to != address(0));
+    require(_value <= getBalance(msg.sender));
+    uint256 ownerBalance = address(msg.sender).balance;
+    uint256 receiverBalance = address(_to).balance;
+    ownerBalance = ownerBalance.sub(_value);
+    receiverBalance = receiverBalance.add(_value);
+    emit Transfer(msg.sender, _to, _value);
+    return true;
   }
 
   /**
