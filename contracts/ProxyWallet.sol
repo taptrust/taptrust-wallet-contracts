@@ -203,6 +203,16 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Check if session is active or closed.
+   * @param dataId string Data id value.
+   * @return SessionState State of the session.
+   */
+  function checkSessionState(string dataId) public view returns (SessionState) {
+    require(sessionData[dataId].state == SessionState.Active || sessionData[dataId].state == SessionState.Closed);
+    return sessionData[dataId].state;
+  }
+
+  /**
    * @dev Add a new administrator to the contract.
    * @param _admin address The address of the administrator to add.
    */
