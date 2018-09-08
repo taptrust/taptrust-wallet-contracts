@@ -165,9 +165,9 @@ contract ProxyWallet {
    * @dev Refund used gas.
    */
   modifier refundGasCost() {
-    uint256 remainingGasStart = msg.gas;
+    uint256 remainingGasStart = gasleft();
     _;
-    uint256 remainingGasEnd = msg.gas;
+    uint256 remainingGasEnd = gasleft();
     uint256 usedGas = remainingGasStart - remainingGasEnd;
     usedGas += 21000 + 9700;
 
