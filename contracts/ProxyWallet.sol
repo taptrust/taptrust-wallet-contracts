@@ -162,6 +162,21 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Refund used gas.
+   */
+  modifier refundGasCost() {
+    uint256 remainingGasStart = msg.gas;
+    _;
+    uint256 remainingGasEnd = msg.gas;
+    uint256 usedGas = remainingGasStart - remainingGasEnd;
+    usedGas += 21000 + 9700;
+
+    uint256 gasCost = usedGas * tx.gasprice;
+
+    tx.origin.transfer(gasCost);
+  }
+
+  /**
    * Fired when username is set.
    */
   event UsernameSet(address indexed from, string username);
@@ -185,6 +200,11 @@ contract ProxyWallet {
    * Transfer event
    */
   event Transfer(address indexed from, address indexed to, uint256 value);
+
+  /**
+   * Gas refund event
+   */
+  event GasRefundEvent(address sender);
 
   /**
    * @dev Proxy Wallet constructor.
@@ -407,6 +427,14 @@ contract ProxyWallet {
   function refundGasCosts(address _admin) isOwner isAuthorizedAdmin(_admin) public returns (bool) {
     transfer(_admin, totalGasCosts);
   }
+
+  /**
+   * @dev Refund gas cost function.
+   */
+  function refundGasCostFunction() external refundGasCost {
+    emit GasRefundEvent(msg.sender);
+  }
+
 
   /**
    * @dev Destroy the contract.
