@@ -27,6 +27,9 @@ contract ProxyWallet {
   // Session state
   enum SessionState {Active, Closed}
 
+  // Transaction type
+  enum TransactionType {OneTime, Session}
+
   // Session data structure
   struct Data {
     address deviceId;
@@ -40,6 +43,7 @@ contract ProxyWallet {
     uint256 startTime;
     uint256 duration;
     SessionState state;
+    TransactionType transactionType;
   }
 
   // Session data instance
@@ -142,11 +146,8 @@ contract ProxyWallet {
    * @param _publicKey string Public key of the user.
    */
   constructor(address[] _administrators, string _username, string _publicKey) onlyValidAdministrators(_administrators) public {
-
     owner = msg.sender;
-
     setOwnerUsername(_username);
-
     setOwnerPublicKey(_publicKey);
 
     for (uint256 i = 0; i < _administrators.length; i++) {
@@ -186,8 +187,8 @@ contract ProxyWallet {
    * @param startTime uint256 Session start time value.
    * @param duration uint256 Session length value.
    */
-  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration) public {
-    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active);
+  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) isOwner public {
+    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType);
     emit SessionEvent(deviceId, dataId, SessionState.Active);
   }
 
@@ -252,10 +253,10 @@ contract ProxyWallet {
   /**
    * @dev Get other session data from session data.
    * @param dataId string Data id value used as index to find data from session.
-   * @return address, string, bytes32, uint256, uint256 Device id, subject, hashed data, start time and duration values form session.
+   * @return address, string, bytes32, uint256, uint256 Device id, subject, hashed data, start time, duration values, session state and transaction type form session.
    */
-  function getOtherSessionData(string dataId) public constant returns (address, string, bytes32, uint256, uint256, SessionState)  {
-    return (sessionData[dataId].deviceId, sessionData[dataId].subject, sessionData[dataId].hashedData, sessionData[dataId].startTime, sessionData[dataId].duration, sessionData[dataId].state);
+  function getOtherSessionData(string dataId) public constant returns (address, string, bytes32, uint256, uint256, SessionState, TransactionType)  {
+    return (sessionData[dataId].deviceId, sessionData[dataId].subject, sessionData[dataId].hashedData, sessionData[dataId].startTime, sessionData[dataId].duration, sessionData[dataId].state, sessionData[dataId].transactionType);
   }
 
   /**
@@ -308,10 +309,21 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Check if its one time transaction and execute transfer.
+   * @param _transactionType TransactionType Transaction type (one time transaction, session timed transaction)
+   * @param _to address The address to transfer to.
+   * @param _value uint256 The amount to be transferred.
+   */
+  function checkIfOneTimeTransaction(TransactionType _transactionType, address _to, uint256 _value) public {
+    require(_transactionType == TransactionType.OneTime);
+    transfer(_to, _value);
+  }
+
+  /**
    * @dev Transfer funds for a specified address.
-   * @param _to The address to transfer to.
-   * @param _value The amount to be transferred.
-   * @return True if the function was executed successfully.
+   * @param _to address The address to transfer to.
+   * @param _value uint256 The amount to be transferred.
+   * @return bool True if the function was executed successfully.
    */
   function transfer(address _to, uint256 _value) public returns (bool) {
     require(_to != address(0));
