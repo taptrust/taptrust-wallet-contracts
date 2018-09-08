@@ -115,6 +115,24 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Checks if its one time transaction
+   * @param _transactionType TransactionType Type of transaction
+   */
+  modifier isOneTimeTransaction(TransactionType _transactionType) {
+    require(_transactionType == TransactionType.OneTime);
+    _;
+  }
+
+  /**
+   * @dev Checks if its not one time transaction
+   * @param _transactionType TransactionType Type of transaction
+   */
+  modifier isNotOneTimeTransaction(TransactionType _transactionType) {
+    require(_transactionType != TransactionType.OneTime);
+    _;
+  }
+
+  /**
    * Fired when username is set.
    */
   event UsernameSet(address indexed from, string username);
@@ -187,7 +205,7 @@ contract ProxyWallet {
    * @param startTime uint256 Session start time value.
    * @param duration uint256 Session length value.
    */
-  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) isOwner public {
+  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) isOwner isNotOneTimeTransaction(transactionType) public {
     sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType);
     emit SessionEvent(deviceId, dataId, SessionState.Active);
   }
@@ -314,8 +332,7 @@ contract ProxyWallet {
    * @param _to address The address to transfer to.
    * @param _value uint256 The amount to be transferred.
    */
-  function checkIfOneTimeTransaction(TransactionType _transactionType, address _to, uint256 _value) public {
-    require(_transactionType == TransactionType.OneTime);
+  function checkIfOneTimeTransaction(TransactionType _transactionType, address _to, uint256 _value) isOneTimeTransaction(_transactionType) public {
     transfer(_to, _value);
   }
 
