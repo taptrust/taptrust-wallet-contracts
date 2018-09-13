@@ -214,8 +214,6 @@ contract ProxyWallet {
     startGas = gasleft();
 
     owner = msg.sender;
-    setUsername(_username);
-    setUserPublicKey(_publicKey);
 
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
