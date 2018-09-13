@@ -55,11 +55,11 @@ contract ProxyWallet {
   // List of administrator checks for each address
   mapping(address => bool) public isAdministrator;
 
-  // Owner Username
-  string private ownerUsername;
+  // Username of the user/app
+  string private username;
 
-  // Owner Public Key
-  string private ownerPublicKey;
+  // User/App Public Key
+  string private userPublicKey;
 
   // Start gas value
   uint256 public startGas;
@@ -209,15 +209,13 @@ contract ProxyWallet {
   /**
    * @dev Proxy Wallet constructor.
    * @param _administrators address[] List of administrator addresses.
-   * @param _username string Username of the user.
-   * @param _publicKey string Public key of the user.
    */
-  constructor(address[] _administrators, string _username, string _publicKey) onlyValidAdministrators(_administrators) public {
+  constructor(address[] _administrators) onlyValidAdministrators(_administrators) public {
     startGas = gasleft();
 
     owner = msg.sender;
-    setOwnerUsername(_username);
-    setOwnerPublicKey(_publicKey);
+    setUsername(_username);
+    setUserPublicKey(_publicKey);
 
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
@@ -227,20 +225,20 @@ contract ProxyWallet {
   }
 
   /**
-   * @dev Set owner username.
+   * @dev Set username of the user/app.
    * @param _username string Username of the user.
    */
-  function setOwnerUsername(string _username) onlyValidUsername(_username) internal {
-    ownerUsername = _username;
+  function setUsername(string _username) onlyValidUsername(_username) public {
+    username = _username;
     emit UsernameSet(msg.sender, _username);
   }
 
   /**
-   * @dev Set owner public key.
+   * @dev Set user/app public key.
    * @param _publicKey string Public key of the user.
    */
-  function setOwnerPublicKey(string _publicKey) onlyValidPublicKey(_publicKey) internal {
-    ownerPublicKey = _publicKey;
+  function setUserPublicKey(string _publicKey) onlyValidPublicKey(_publicKey) public {
+    userPublicKey = _publicKey;
     emit PublicKeySet(msg.sender, _publicKey);
   }
 
