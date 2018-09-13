@@ -43,6 +43,8 @@ contract ProxyWallet {
     uint256 startTime;
     uint256 duration;
     SessionState state;
+    string username;
+    string userPublicKey;
     TransactionType transactionType;
   }
 
@@ -54,12 +56,6 @@ contract ProxyWallet {
 
   // List of administrator checks for each address
   mapping(address => bool) public isAdministrator;
-
-  // Username of the user/app
-  string private username;
-
-  // User/App Public Key
-  string private userPublicKey;
 
   // Start gas value
   uint256 public startGas;
@@ -224,20 +220,26 @@ contract ProxyWallet {
 
   /**
    * @dev Set username of the user/app.
+   * @param dataId Data id value.
    * @param _username string Username of the user.
    */
-  function setUsername(string _username) onlyValidUsername(_username) public {
-    username = _username;
-    emit UsernameSet(msg.sender, _username);
+  function setUsername(string dataId, string _username) onlyValidUsername(_username) public {
+    if (checkSessionState(dataId) == SessionState.Active) {
+      sessionData[dataId].username = _username;
+      emit UsernameSet(msg.sender, _username);
+    }
   }
 
   /**
    * @dev Set user/app public key.
+   * @param dataId Data id value.
    * @param _publicKey string Public key of the user.
    */
-  function setUserPublicKey(string _publicKey) onlyValidPublicKey(_publicKey) public {
-    userPublicKey = _publicKey;
-    emit PublicKeySet(msg.sender, _publicKey);
+  function setUserPublicKey(string dataId, string _publicKey) onlyValidPublicKey(_publicKey) public {
+    if (checkSessionState(dataId) == SessionState.Active) {
+      sessionData[dataId].userPublicKey = _publicKey;
+      emit UsernameSet(msg.sender, _publicKey);
+    }
   }
 
   /**
@@ -256,7 +258,7 @@ contract ProxyWallet {
    */
   function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) isOwner isNotOneTimeTransaction(transactionType) public {
     startGas = gasleft();
-    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType);
+    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType, '', '');
     spentGas = startGas - gasleft();
     totalGasCosts += spentGas;
     emit SessionEvent(deviceId, dataId, SessionState.Active);
