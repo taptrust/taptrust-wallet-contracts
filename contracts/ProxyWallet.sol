@@ -73,6 +73,14 @@ contract ProxyWallet {
   // Total gas costs
   uint256 public totalGasCosts;
 
+  uint256 remainingGasStart;
+
+  uint256 remainingGasEnd;
+
+  uint256 usedGas;
+
+  uint256 gasCost;
+
   /**
    * @dev Requires a valid owner of the contract.
    */
@@ -165,18 +173,15 @@ contract ProxyWallet {
   }
 
   /**
-   * @dev Refund used gas.
+   * @dev Calculate used gas.
    */
-  modifier refundGasCost() {
-    uint256 remainingGasStart = gasleft();
+  modifier calculateGasCost() {
+    remainingGasStart = gasleft();
     _;
-    uint256 remainingGasEnd = gasleft();
-    uint256 usedGas = remainingGasStart - remainingGasEnd;
+    remainingGasEnd = gasleft();
+    usedGas = remainingGasStart - remainingGasEnd;
     usedGas += 21000 + 9700;
-
-    uint256 gasCost = usedGas * tx.gasprice;
-
-    tx.origin.transfer(gasCost);
+    gasCost += (usedGas * tx.gasprice);
   }
 
   /**
@@ -214,15 +219,11 @@ contract ProxyWallet {
    * @param _administrators address[] List of administrator addresses.
    */
   constructor(address[] _administrators) onlyValidAdministrators(_administrators) public {
-    startGas = gasleft();
-
     owner = msg.sender;
 
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
     }
-    spentGas = startGas - gasleft();
-    totalGasCosts += spentGas;
   }
 
   /**
@@ -259,11 +260,8 @@ contract ProxyWallet {
    * @param startTime uint256 Session start time value.
    * @param duration uint256 Session length value.
    */
-  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) isOwner isNotOneTimeTransaction(transactionType) public {
-    startGas = gasleft();
+  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) isOwner isNotOneTimeTransaction(transactionType) calculateGasCost public {
     sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType);
-    spentGas = startGas - gasleft();
-    totalGasCosts += spentGas;
     emit SessionEvent(deviceId, dataId, SessionState.Active);
   }
 
@@ -271,13 +269,10 @@ contract ProxyWallet {
    * @dev Close session.
    * @param dataId string Data id value.
    */
-  function closeSession(string dataId) isOwner public {
-    startGas = gasleft();
+  function closeSession(string dataId) isOwner calculateGasCost public {
     require(sessionData[dataId].deviceId != 0);
     address deviceId = sessionData[dataId].deviceId;
     delete sessionData[dataId];
-    spentGas = startGas - gasleft();
-    totalGasCosts += spentGas;
     emit SessionEvent(deviceId, dataId, SessionState.Closed);
   }
 
@@ -286,11 +281,8 @@ contract ProxyWallet {
    * @param dataId string Data id value.
    * @return SessionState State of the session.
    */
-  function checkSessionState(string dataId) public returns (SessionState) {
-    startGas = gasleft();
+  function checkSessionState(string dataId) calculateGasCost public returns (SessionState) {
     require(sessionData[dataId].state == SessionState.Active || sessionData[dataId].state == SessionState.Closed);
-    spentGas = startGas - gasleft();
-    totalGasCosts += spentGas;
     return sessionData[dataId].state;
   }
 
@@ -424,16 +416,13 @@ contract ProxyWallet {
    * @param _value uint256 The amount to be transferred.
    * @return bool True if the function was executed successfully.
    */
-  function transfer(address _to, uint256 _value) public returns (bool) {
-    startGas = gasleft();
+  function transfer(address _to, uint256 _value) calculateGasCost public returns (bool) {
     require(_to != address(0));
     require(_value <= getBalance(msg.sender));
     uint256 ownerBalance = address(msg.sender).balance;
     uint256 receiverBalance = address(_to).balance;
     ownerBalance = ownerBalance.sub(_value);
     receiverBalance = receiverBalance.add(_value);
-    spentGas = startGas - gasleft();
-    totalGasCosts += spentGas;
     emit Transfer(msg.sender, _to, _value);
     return true;
   }
@@ -443,17 +432,10 @@ contract ProxyWallet {
    * @param _admin address The address of admin.
    * @return bool True if the function was executed successfully.
    */
-  function refundGasCosts(address _admin) isOwner isAuthorizedAdmin(_admin) public returns (bool) {
-    transfer(_admin, totalGasCosts);
-  }
-
-  /**
-   * @dev Refund gas cost function.
-   */
-  function refundGasCostFunction() external refundGasCost {
+  function refundGasCosts(address _admin) isOwner isAuthorizedAdmin(_admin) calculateGasCost public returns (bool) {
+    transfer(_admin, gasCost);
     emit GasRefundEvent(msg.sender);
   }
-
 
   /**
    * @dev Destroy the contract.
