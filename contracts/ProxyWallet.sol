@@ -322,8 +322,26 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from session.
    * @return bytes32, bytes32 First and second key from session data.
    */
-  function getPublicKey(string dataId) public constant returns (bytes32, bytes32)  {
+  function getPublicKeyFromSession(string dataId) public constant returns (bytes32, bytes32)  {
     return (sessionData[dataId].keyOne, sessionData[dataId].keyTwo);
+  }
+
+  /**
+   * @dev Get user stored public key of given address.
+   * @param dataId string Data id value used as index to find data from list of users.
+   * @return string User stored public key.
+   */
+  function getPublicKey(string dataId) public constant returns (string)  {
+    return users[dataId].userPublicKey;
+  }
+
+  /**
+   * @dev Get user stored username of given address.
+   * @param dataId string Data id value used as index to find data from list of users.
+   * @return string User stored username.
+   */
+  function getUsername(string dataId) public constant returns (string)  {
+    return users[dataId].username;
   }
 
   /**
