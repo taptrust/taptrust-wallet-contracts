@@ -174,6 +174,10 @@ contract ProxyWallet {
 
   /**
    * @dev Calculate used gas.
+   * Calculation of the used gas which is used for every function,
+   * that executes some kind of interaction with Smart Contract and adds on calculation amount of gas used so far.
+   * Using usedGas variable to store total amount of gas used and gasCost variable to store total amount of gas value,
+   * used so far (including the current function being run)
    */
   modifier calculateGasCost() {
     remainingGasStart = gasleft();
