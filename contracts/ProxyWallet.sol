@@ -230,11 +230,9 @@ contract ProxyWallet {
    * @param dataId Data id value.
    * @param _username string Username of the user.
    */
-  function setUsername(string dataId, string _username) onlyValidUsername(_username) public {
-    if (checkSessionState(dataId) == SessionState.Closed) {
-      users[dataId].username = _username;
-      emit UsernameSet(msg.sender, _username);
-    }
+  function setNewUsername(string dataId, string _username) onlyValidUsername(_username) public {
+    users[dataId].username = _username;
+    emit UsernameSet(msg.sender, _username);
   }
 
   /**
@@ -242,11 +240,9 @@ contract ProxyWallet {
    * @param dataId Data id value.
    * @param _publicKey string Public key of the user.
    */
-  function setUserPublicKey(string dataId, string _publicKey) onlyValidPublicKey(_publicKey) public {
-    if (checkSessionState(dataId) == SessionState.Closed) {
-      users[dataId].userPublicKey = _publicKey;
-      emit UsernameSet(msg.sender, _publicKey);
-    }
+  function setNewUserPublicKey(string dataId, string _publicKey) onlyValidPublicKey(_publicKey) public {
+    users[dataId].userPublicKey = _publicKey;
+    emit UsernameSet(msg.sender, _publicKey);
   }
 
   /**
