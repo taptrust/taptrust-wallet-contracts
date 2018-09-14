@@ -43,13 +43,20 @@ contract ProxyWallet {
     uint256 startTime;
     uint256 duration;
     SessionState state;
-    string username;
-    string userPublicKey;
     TransactionType transactionType;
   }
 
-  // Session data instance
+  // User data structure
+  struct UserData {
+    string username;
+    string userPublicKey;
+  }
+
+  // Session data mapping
   mapping(string => Data) private sessionData;
+
+  // Users data mapping
+  mapping(string => UserData) private users;
 
   // List of administrator addresses
   address[] public administrators;
@@ -224,8 +231,8 @@ contract ProxyWallet {
    * @param _username string Username of the user.
    */
   function setUsername(string dataId, string _username) onlyValidUsername(_username) public {
-    if (checkSessionState(dataId) == SessionState.Active) {
-      sessionData[dataId].username = _username;
+    if (checkSessionState(dataId) == SessionState.Closed) {
+      users[dataId].username = _username;
       emit UsernameSet(msg.sender, _username);
     }
   }
@@ -236,8 +243,8 @@ contract ProxyWallet {
    * @param _publicKey string Public key of the user.
    */
   function setUserPublicKey(string dataId, string _publicKey) onlyValidPublicKey(_publicKey) public {
-    if (checkSessionState(dataId) == SessionState.Active) {
-      sessionData[dataId].userPublicKey = _publicKey;
+    if (checkSessionState(dataId) == SessionState.Closed) {
+      users[dataId].userPublicKey = _publicKey;
       emit UsernameSet(msg.sender, _publicKey);
     }
   }
@@ -258,7 +265,7 @@ contract ProxyWallet {
    */
   function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) isOwner isNotOneTimeTransaction(transactionType) public {
     startGas = gasleft();
-    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType, '', '');
+    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType);
     spentGas = startGas - gasleft();
     totalGasCosts += spentGas;
     emit SessionEvent(deviceId, dataId, SessionState.Active);
