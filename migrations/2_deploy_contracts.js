@@ -1,14 +1,15 @@
 let ConvertLib = artifacts.require('ConvertLib');
 let MetaCoin = artifacts.require('MetaCoin');
 let ECRecovery = artifacts.require('ECRecovery');
+let SafeMath = artifacts.require('SafeMath');
 let ProxyWallet = artifacts.require('ProxyWallet');
 
 module.exports = function (deployer) {
-  const admin1 = '0x23159c0f232335f0211Ce0443BaE38870dB2F18B';
-  const admin2 = '0xdCf5082AdC8c1b35c1AB319F58Af36dfbAa0ed50';
-  const admin3 = '0x928255F2C7418C6206341E8F0950fD8CED394882';
-  const admin4 = '0x9422D78A6864ed5C6bE081Fb90A9B2Ea5c0062c3';
-  const admin5 = '0xb602A158Dd02a97f8E5daA7e9636E9A1F9a8DA4c';
+  const admin1 = '0xbe0942d848991C0b915CA6520c5F064dcF917c22';
+  const admin2 = '0x659541FECCE1B053000657BBF08aB6E67406F711';
+  const admin3 = '0xe1c3972879c4D5fE2340c8DA8DFa927DcEBFa956';
+  const admin4 = '0xc93ddb424CEdeC354c0b85B3c6ba8BD7ff79B3C9';
+  const admin5 = '0x753A8f9829F3935d88C5C4640e02eC4E51Be941B';
 
   const administrators = [
     admin1,
@@ -18,19 +19,16 @@ module.exports = function (deployer) {
     admin5
   ];
 
-  const username = 'test_username';
-  const publicKey = '38bf319433a9d9188fcfd213c32ccb7b93465d67deadf896f644058c3a620d2c';
-
   deployer.deploy(ConvertLib);
   deployer.link(ConvertLib, MetaCoin);
   deployer.deploy(MetaCoin);
 
   deployer.deploy(ECRecovery);
+  deployer.deploy(SafeMath);
   deployer.link(ECRecovery, ProxyWallet);
+  deployer.link(SafeMath, ProxyWallet);
 
   deployer.deploy(ProxyWallet,
-    administrators,
-    username,
-    publicKey
+    administrators
   )
 };

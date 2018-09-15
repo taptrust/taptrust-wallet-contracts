@@ -16,14 +16,6 @@ if (node === 'Ganache') ganache = true;
 if (node === 'Parity') parity = true;
 console.log('testrpc=' + ganache);
 
-function toHex(str) {
-  let hex = '';
-  for (let i = 0; i < str.length; i++) {
-    hex += '' + str.charCodeAt(i).toString(16);
-  }
-  return hex
-}
-
 async function generateSignature(address, message) {
   console.log('Generating signature');
   console.log('  address=' + address);
