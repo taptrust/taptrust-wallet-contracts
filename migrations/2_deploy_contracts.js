@@ -22,7 +22,5 @@ module.exports = function (deployer, network, accounts) {
   deployer.link(ECRecovery, ProxyWallet);
   deployer.link(SafeMath, ProxyWallet);
 
-  deployer.deploy(ProxyWallet,
-    administrators
-  )
+  deployer.deploy(ProxyWallet, administrators);
 };

@@ -144,6 +144,15 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Check if user is not already added to users mapping.
+   * @param dataId string Data id value.
+   */
+  modifier checkIfValidUser(string dataId) {
+    require(bytes(users[dataId].username).length == 0);
+    _;
+  }
+
+  /**
    * @dev Checks if account has funds.
    * @param _address address Address of the account which balance needs to be checked.
    */
@@ -226,6 +235,17 @@ contract ProxyWallet {
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
     }
+  }
+
+  /**
+   * @dev Set new user.
+   * @param dataId Data id value.
+   * @param _username string Username of the user.
+   * @param _publicKey string Public key of the user.
+   */
+  function setNewUser(string dataId, string _username, string _publicKey) checkIfValidUser(dataId) internal {
+    setNewUsername(dataId, _username);
+    setNewUserPublicKey(dataId, _publicKey);
   }
 
   /**
