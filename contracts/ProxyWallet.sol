@@ -96,7 +96,6 @@ contract ProxyWallet {
     require(_admin != address(0));
     bool isAdmin = false;
     for (uint256 i = 0; i < administrators.length; i++) {
-      addAdministrator(administrators[i]);
       if (_admin == administrators[i]) {
         isAdmin = true;
       }
@@ -147,8 +146,17 @@ contract ProxyWallet {
    * @dev Check if user is not already added to users mapping.
    * @param dataId string Data id value.
    */
-  modifier checkIfValidUser(string dataId) {
+  modifier checkIfNotAddedUser(string dataId) {
     require(bytes(users[dataId].username).length == 0);
+    _;
+  }
+
+  /**
+   * @dev Check if user is already added to users mapping.
+   * @param dataId string Data id value.
+   */
+  modifier checkIfAddedUser(string dataId) {
+    require(bytes(users[dataId].username).length > 0);
     _;
   }
 
@@ -243,7 +251,7 @@ contract ProxyWallet {
    * @param _username string Username of the user.
    * @param _publicKey string Public key of the user.
    */
-  function setNewUser(string dataId, string _username, string _publicKey) checkIfValidUser(dataId) internal {
+  function setNewUser(string dataId, string _username, string _publicKey) checkIfNotAddedUser(dataId) internal {
     setNewUsername(dataId, _username);
     setNewUserPublicKey(dataId, _publicKey);
   }
@@ -282,7 +290,7 @@ contract ProxyWallet {
    * @param startTime uint256 Session start time value.
    * @param duration uint256 Session length value.
    */
-  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) isOwner isNotOneTimeTransaction(transactionType) calculateGasCost public {
+  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) checkIfAddedUser(dataId) isNotOneTimeTransaction(transactionType) calculateGasCost public {
     sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType);
     emit SessionEvent(deviceId, dataId, SessionState.Active);
   }
@@ -291,7 +299,7 @@ contract ProxyWallet {
    * @dev Close session.
    * @param dataId string Data id value.
    */
-  function closeSession(string dataId) isOwner calculateGasCost public {
+  function closeSession(string dataId) checkIfAddedUser(dataId) calculateGasCost public {
     require(sessionData[dataId].deviceId != 0);
     address deviceId = sessionData[dataId].deviceId;
     delete sessionData[dataId];
@@ -454,7 +462,7 @@ contract ProxyWallet {
    * @param _admin address The address of admin.
    * @return bool True if the function was executed successfully.
    */
-  function refundGasCosts(address _admin) isOwner isAuthorizedAdmin(_admin) calculateGasCost public returns (bool) {
+  function refundGasCosts(address _admin) isAuthorizedAdmin(_admin) calculateGasCost public returns (bool) {
     transfer(_admin, gasCost);
     emit GasRefundEvent(msg.sender);
   }
