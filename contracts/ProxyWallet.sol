@@ -64,21 +64,19 @@ contract ProxyWallet {
   // List of administrator checks for each address
   mapping(address => bool) public isAdministrator;
 
-  // Start gas value
-  uint256 public startGas;
-
-  // Spent gas value
-  uint256 public spentGas;
-
   // Total gas costs
   uint256 public totalGasCosts;
 
+  // Start gas value
   uint256 remainingGasStart;
 
+  // Spent gas value
   uint256 remainingGasEnd;
 
+  // Used gas calculation
   uint256 usedGas;
 
+  // Total cost of gas for all methods
   uint256 gasCost;
 
   /**
