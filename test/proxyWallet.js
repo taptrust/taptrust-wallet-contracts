@@ -20,7 +20,7 @@ async function generateSignature(address, message) {
   console.log('Generating signature');
   console.log('  address=' + address);
   let encoded;
-  if (testrpc) {
+  /*if (testrpc) {
     encoded = web3.utils.sha3(message);
   }
   if (geth || parity) {
@@ -28,7 +28,7 @@ async function generateSignature(address, message) {
   }
   if (ganache) {
     encoded = web3.utils.sha3(message);
-  }
+  }*/
   encoded = web3.utils.sha3(message);
   console.log('  encoded message=' + encoded);
   return web3.eth.sign(encoded, address);
@@ -38,7 +38,7 @@ async function verifySignature(address, message, sig) {
   console.log('Verifying signature');
   console.log('  address=' + address);
   let encoded;
-  if (testrpc) {
+  /*if (testrpc) {
     //encoded = web3.sha3(message);
     encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
   } else if (geth || parity) {
@@ -46,7 +46,7 @@ async function verifySignature(address, message, sig) {
     encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
   } else if (ganache) {
     encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
-  }
+  }*/
   encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
   console.log('  encoded message=' + encoded.toString('hex'));
   if (sig.slice(0, 2) === '0x') sig = sig.substr(2);
@@ -130,7 +130,7 @@ contract('Initialize ProxyWallet Smart Contract', function (accounts) {
       let sig = await generateSignature(address, message);
       console.log('sig =>', sig);
       let ret = await verifySignature(address, message, sig);
-      return ProxyWalletInstance.recoverAddress(ret.encoded, ret.v, ret.r, ret.s)
+      return ProxyWalletInstance.recoverAddress(message, sig);
     }).then((data) => {
       console.log(data);
     })
