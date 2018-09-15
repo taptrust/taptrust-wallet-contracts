@@ -50,7 +50,7 @@ async function verifySignature(address, message, sig) {
   encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
   console.log('  encoded message=' + encoded.toString('hex'));
   if (sig.slice(0, 2) === '0x') sig = sig.substr(2);
-  if (testrpc || geth) {
+  /*if (testrpc || geth) {
     let r = '0x' + sig.substr(0, 64);
     let s = '0x' + sig.substr(64, 64);
     let v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
@@ -64,7 +64,7 @@ async function verifySignature(address, message, sig) {
     r = '0x' + sig.substr(0, 64);
     s = '0x' + sig.substr(64, 64);
     v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
-  }
+  }*/
 
   r = '0x' + sig.substr(0, 64);
   s = '0x' + sig.substr(64, 64);
@@ -82,7 +82,7 @@ async function verifySignature(address, message, sig) {
   return ret;
 }
 
-contract('Initialize ProxyWallet Smart Contract', function (accounts) {
+contract('ProxyWallet Smart Contract', function (accounts) {
   it('Check if Proxy Wallet is Initialized', function () {
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
