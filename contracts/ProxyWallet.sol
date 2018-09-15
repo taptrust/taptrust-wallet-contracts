@@ -30,6 +30,12 @@ contract ProxyWallet {
   // Transaction type
   enum TransactionType {OneTime, Session}
 
+  // User data structure
+  struct UserData {
+    string username;
+    string userPublicKey;
+  }
+
   // Session data structure
   struct Data {
     address deviceId;
@@ -46,17 +52,11 @@ contract ProxyWallet {
     TransactionType transactionType;
   }
 
-  // User data structure
-  struct UserData {
-    string username;
-    string userPublicKey;
-  }
+  // Users data mapping
+  mapping(string => UserData) private users;
 
   // Session data mapping
   mapping(string => Data) private sessionData;
-
-  // Users data mapping
-  mapping(string => UserData) private users;
 
   // List of administrator addresses
   address[] public administrators;
@@ -349,7 +349,7 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from list of users.
    * @return string User stored public key.
    */
-  function getPublicKey(string dataId) public constant returns (string)  {
+  function getPublicKey(string dataId) checkIfAddedUser(dataId) public constant returns (string)  {
     return users[dataId].userPublicKey;
   }
 
@@ -358,7 +358,7 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from list of users.
    * @return string User stored username.
    */
-  function getUsername(string dataId) public constant returns (string)  {
+  function getUsername(string dataId) checkIfAddedUser(dataId) public constant returns (string)  {
     return users[dataId].username;
   }
 
