@@ -87,7 +87,7 @@ async function verifySignature(address, message, sig) {
 }
 
 contract('ProxyWallet Smart Contract', function (accounts) {
-  it('Check if Proxy Wallet is Initialized', function () {
+  it('Check if proxy wallet is initialized', function () {
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
       return ProxyWalletInstance;
@@ -105,7 +105,17 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     })
   });
 
-  it("Check account has ETH balance", function () {
+  it('Check account ETH balance', function () {
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return web3.eth.getBalance(accounts[0]);
+    }).then((balance) => {
+      console.log('Balance: ', web3.utils.fromWei(balance));
+      assert.isDefined(balance);
+    })
+  });
+
+  it('Check if account has ETH balance', function () {
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
       return web3.eth.getBalance(accounts[0]);
@@ -114,7 +124,25 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     })
   });
 
-  it('Check and save administrators account', function () {
+  it('Check session state at the start', function () {
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.sessionData;
+    }).then((session) => {
+      assert.equal(session, undefined);
+    })
+  });
+
+  it('Check number of administrators at the start', function () {
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.getAdministratorsCount();
+    }).then((numberOfAdmins) => {
+      assert.equal(numberOfAdmins.toNumber(), 5, 'Correct length of administrators at the start is 5');
+    })
+  });
+
+  it('Check and save administrators accounts', function () {
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
       return ProxyWalletInstance.addAdministrator(accounts[2], {from: accounts[0]});
@@ -131,6 +159,15 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     })
   });
 
+  it('Check number of users at the start', function () {
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.users;
+    }).then((users) => {
+      assert.equal(users, undefined);
+    })
+  });
+
   /*it('Generate and check signature', async function() {
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
@@ -144,7 +181,7 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       return ProxyWalletInstance.signMessage(message);
     }).then((result) => {
       console.log('Signed message hash =>', result);
-      // assert.equal(result, accounts[0]);
+      assert.equal(result, accounts[0]);
     });
   });
 
@@ -152,7 +189,6 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     let address = accounts[0];
     console.log('Owner =>' + address);
     const message = 'Lorem ipsum mark mark dolor sit';
-
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
       console.log('Message =>', message);
@@ -168,7 +204,6 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     let address = accounts[0];
     console.log('Owner=' + address);
     const message = 'Lorem ipsum mark mark dolor sit';
-
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
       console.log('sig =>', address);

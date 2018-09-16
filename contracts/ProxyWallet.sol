@@ -351,11 +351,19 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Get all administrators length.
+   * @return uint Number of all administrators.
+   */
+  function getAdministratorsCount() public constant returns (uint) {
+    return administrators.length;
+  }
+
+  /**
    * @dev Get public key value from session data.
    * @param dataId string Data id value used as index to find data from session.
    * @return bytes32, bytes32 First and second key from session data.
    */
-  function getPublicKeyFromSession(string dataId) calculateGasCost public returns (bytes32, bytes32)  {
+  function getPublicKeyFromSession(string dataId) calculateGasCost public returns (bytes32, bytes32) {
     return (sessionData[dataId].keyOne, sessionData[dataId].keyTwo);
   }
 
@@ -364,7 +372,7 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from list of users.
    * @return string User stored public key.
    */
-  function getPublicKey(string dataId) checkIfAddedUser(dataId) calculateGasCost public returns (string)  {
+  function getPublicKey(string dataId) checkIfAddedUser(dataId) calculateGasCost public returns (string) {
     return users[dataId].userPublicKey;
   }
 
@@ -373,7 +381,7 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from list of users.
    * @return string User stored username.
    */
-  function getUsername(string dataId) checkIfAddedUser(dataId) calculateGasCost public returns (string)  {
+  function getUsername(string dataId) checkIfAddedUser(dataId) calculateGasCost public returns (string) {
     return users[dataId].username;
   }
 
