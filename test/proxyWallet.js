@@ -159,7 +159,7 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     })
   });
 
-  it('Check number of users at the start', function () {
+  it('Check users at the start', function () {
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
       return ProxyWalletInstance.users;
@@ -174,6 +174,23 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       return ProxyWalletInstance.gasCost;
     }).then((gasCost) => {
       assert.equal(gasCost, undefined);
+    })
+  });
+
+  it('Set new username and userPublicKey', function () {
+    let id = '0xbe0942d848991C0b915CA6520c5F064dcF917c22';
+    let username = 'test';
+    let userPublicKey = '5fe8b9751389e884ccf697eb78afb47979fff9c32a541e31bb599c782d7c770e';
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.setNewUser(id, username, userPublicKey);
+    }).then(() => {
+      return ProxyWalletInstance.setNewUsername(id, username);
+    }).then((receipt) => {
+      assert.equal(receipt.logs[0].args.username, username, 'correct username added.');
+      return ProxyWalletInstance.setNewUserPublicKey(id, userPublicKey);
+    }).then((receipt) => {
+      assert.equal(receipt.logs[0].args.username, username, 'correct userPublicKey added.');
     })
   });
 

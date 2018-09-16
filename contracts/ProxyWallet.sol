@@ -102,7 +102,6 @@ contract ProxyWallet {
         isAdmin = true;
       }
     }
-
     if (isAdmin) {
       _;
     }
@@ -241,7 +240,6 @@ contract ProxyWallet {
    */
   constructor(address[] _administrators) onlyValidAdministrators(_administrators) public {
     owner = msg.sender;
-
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
     }
@@ -253,7 +251,7 @@ contract ProxyWallet {
    * @param _username string Username of the user.
    * @param _publicKey string Public key of the user.
    */
-  function setNewUser(string dataId, string _username, string _publicKey) checkIfNotAddedUser(dataId) calculateGasCost internal {
+  function setNewUser(string dataId, string _username, string _publicKey) checkIfNotAddedUser(dataId) calculateGasCost public {
     setNewUsername(dataId, _username);
     setNewUserPublicKey(dataId, _publicKey);
   }
