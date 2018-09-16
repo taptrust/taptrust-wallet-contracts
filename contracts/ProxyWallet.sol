@@ -273,7 +273,7 @@ contract ProxyWallet {
    */
   function setNewUserPublicKey(string dataId, string _publicKey) onlyValidPublicKey(_publicKey) calculateGasCost public {
     users[dataId].userPublicKey = _publicKey;
-    emit UsernameSet(msg.sender, _publicKey);
+    emit PublicKeySet(msg.sender, _publicKey);
   }
 
   /**

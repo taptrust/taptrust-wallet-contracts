@@ -190,7 +190,7 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       assert.equal(receipt.logs[0].args.username, username, 'correct username added.');
       return ProxyWalletInstance.setNewUserPublicKey(id, userPublicKey);
     }).then((receipt) => {
-      assert.equal(receipt.logs[0].args.username, username, 'correct userPublicKey added.');
+      assert.equal(receipt.logs[0].args.publicKey, userPublicKey, 'correct userPublicKey added.');
     })
   });
 
