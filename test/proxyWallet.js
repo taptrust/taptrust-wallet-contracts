@@ -168,6 +168,15 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     })
   });
 
+  it('Check total gas costs at the start', function () {
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.gasCost;
+    }).then((gasCost) => {
+      assert.equal(gasCost, undefined);
+    })
+  });
+
   /*it('Generate and check signature', async function() {
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
