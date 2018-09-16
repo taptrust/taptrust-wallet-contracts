@@ -36,6 +36,12 @@ contract ProxyWallet {
     string userPublicKey;
   }
 
+  // Times data structure
+  struct Times {
+    uint256 startTime;
+    uint256 duration;
+  }
+
   // Session data structure
   struct Data {
     address deviceId;
@@ -46,8 +52,7 @@ contract ProxyWallet {
     bytes32 r;
     bytes32 s;
     uint8 v;
-    uint256 startTime;
-    uint256 duration;
+    Times times;
     SessionState state;
     TransactionType transactionType;
   }
@@ -251,7 +256,7 @@ contract ProxyWallet {
    * @param _username string Username of the user.
    * @param _publicKey string Public key of the user.
    */
-  function setNewUser(string dataId, string _username, string _publicKey) checkIfNotAddedUser(dataId) internal {
+  function setNewUser(string dataId, string _username, string _publicKey) checkIfNotAddedUser(dataId) calculateGasCost internal {
     setNewUsername(dataId, _username);
     setNewUserPublicKey(dataId, _publicKey);
   }
@@ -261,7 +266,7 @@ contract ProxyWallet {
    * @param dataId Data id value.
    * @param _username string Username of the user.
    */
-  function setNewUsername(string dataId, string _username) onlyValidUsername(_username) public {
+  function setNewUsername(string dataId, string _username) onlyValidUsername(_username) calculateGasCost public {
     users[dataId].username = _username;
     emit UsernameSet(msg.sender, _username);
   }
@@ -271,7 +276,7 @@ contract ProxyWallet {
    * @param dataId Data id value.
    * @param _publicKey string Public key of the user.
    */
-  function setNewUserPublicKey(string dataId, string _publicKey) onlyValidPublicKey(_publicKey) public {
+  function setNewUserPublicKey(string dataId, string _publicKey) onlyValidPublicKey(_publicKey) calculateGasCost public {
     users[dataId].userPublicKey = _publicKey;
     emit UsernameSet(msg.sender, _publicKey);
   }
@@ -291,7 +296,7 @@ contract ProxyWallet {
    * @param duration uint256 Session length value.
    */
   function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) checkIfAddedUser(dataId) isNotOneTimeTransaction(transactionType) calculateGasCost public {
-    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, startTime, duration, SessionState.Active, transactionType);
+    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, Times(startTime, duration), SessionState.Active, transactionType);
     emit SessionEvent(deviceId, dataId, SessionState.Active);
   }
 
@@ -320,7 +325,7 @@ contract ProxyWallet {
    * @dev Add a new administrator to the contract.
    * @param _admin address The address of the administrator to add.
    */
-  function addAdministrator(address _admin) isOwner public {
+  function addAdministrator(address _admin) isOwner calculateGasCost public {
     require(!isAdministrator[_admin]);
     administrators.push(_admin);
     isAdministrator[_admin] = true;
@@ -329,9 +334,19 @@ contract ProxyWallet {
 
   /**
    * @dev Get all administrator addresses.
+   * @param _id uint256 Id of the administrator.
+   * @return address Administrators address.
+   */
+  function getAdministrator(uint256 _id) onlyValidAdministrators(administrators) calculateGasCost public returns (address) {
+    require(isAdministrator[administrators[_id]]);
+    return administrators[_id];
+  }
+
+  /**
+   * @dev Get all administrator addresses.
    * @return address[] List of all administrators.
    */
-  function getAllAdministrators() public view returns (address[]) {
+  function getAllAdministrators() calculateGasCost public returns (address[]) {
     return administrators;
   }
 
@@ -340,7 +355,7 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from session.
    * @return bytes32, bytes32 First and second key from session data.
    */
-  function getPublicKeyFromSession(string dataId) public constant returns (bytes32, bytes32)  {
+  function getPublicKeyFromSession(string dataId) calculateGasCost public returns (bytes32, bytes32)  {
     return (sessionData[dataId].keyOne, sessionData[dataId].keyTwo);
   }
 
@@ -349,7 +364,7 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from list of users.
    * @return string User stored public key.
    */
-  function getPublicKey(string dataId) checkIfAddedUser(dataId) public constant returns (string)  {
+  function getPublicKey(string dataId) checkIfAddedUser(dataId) calculateGasCost public returns (string)  {
     return users[dataId].userPublicKey;
   }
 
@@ -358,7 +373,7 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from list of users.
    * @return string User stored username.
    */
-  function getUsername(string dataId) checkIfAddedUser(dataId) public constant returns (string)  {
+  function getUsername(string dataId) checkIfAddedUser(dataId) calculateGasCost public returns (string)  {
     return users[dataId].username;
   }
 
@@ -367,17 +382,17 @@ contract ProxyWallet {
    * @param dataId string Data id value used as index to find data from session.
    * @return bytes32, bytes32, uint8 Signature data.
    */
-  function getSignature(string dataId) public constant returns (bytes32, bytes32, uint8)  {
+  function getSignature(string dataId) checkIfAddedUser(dataId) calculateGasCost public returns (bytes32, bytes32, uint8)  {
     return (sessionData[dataId].r, sessionData[dataId].s, sessionData[dataId].v);
   }
 
   /**
    * @dev Get other session data from session data.
    * @param dataId string Data id value used as index to find data from session.
-   * @return address, string, bytes32, uint256, uint256 Device id, subject, hashed data, start time, duration values, session state and transaction type form session.
+   * @return address, string, bytes32, uint256, uint256, SessionState, TransactionType Device id, subject, hashed data, start time, duration value, user data, session state and transaction type from session.
    */
-  function getOtherSessionData(string dataId) public constant returns (address, string, bytes32, uint256, uint256, SessionState, TransactionType)  {
-    return (sessionData[dataId].deviceId, sessionData[dataId].subject, sessionData[dataId].hashedData, sessionData[dataId].startTime, sessionData[dataId].duration, sessionData[dataId].state, sessionData[dataId].transactionType);
+  function getOtherSessionData(string dataId) checkIfAddedUser(dataId) calculateGasCost public returns (address, string, bytes32, uint256, uint256, SessionState, TransactionType)  {
+    return (sessionData[dataId].deviceId, sessionData[dataId].subject, sessionData[dataId].hashedData, sessionData[dataId].times.startTime, sessionData[dataId].times.duration, sessionData[dataId].state, sessionData[dataId].transactionType);
   }
 
   /**
@@ -385,7 +400,7 @@ contract ProxyWallet {
    * @param _messageHash bytes32 Hashed message that needs to be signed.
    * @return bytes32 Encoded message.
    */
-  function signMessage(bytes32 _messageHash) public pure returns (bytes32) {
+  function signMessage(bytes32 _messageHash) calculateGasCost public returns (bytes32) {
     return _messageHash.toEthSignedMessageHash();
   }
 
@@ -395,7 +410,7 @@ contract ProxyWallet {
    * @param _sig bytes Signature hashed value.
    * @return address Returning address which signed the message.
    */
-  function recoverAddress(bytes32 _messageHash, bytes _sig) public pure returns (address) {
+  function recoverAddress(bytes32 _messageHash, bytes _sig) calculateGasCost public returns (address) {
     return _messageHash.recover(_sig);
   }
 
@@ -406,7 +421,7 @@ contract ProxyWallet {
    * @param _sig bytes Signature message.
    * @return bool True if the given address signed the message.
    */
-  function isSignedMessage(address _address, bytes32 _messageHash, bytes _sig) internal pure returns (bool) {
+  function isSignedMessage(address _address, bytes32 _messageHash, bytes _sig) calculateGasCost internal returns (bool) {
     return recoverAddress(_messageHash, _sig) == _address;
   }
 
@@ -415,7 +430,7 @@ contract ProxyWallet {
    * @param _address address Address of account which balanced needs to be returned.
    * @return uint256 Balance of the account.
    */
-  function getBalance(address _address) public view returns (uint256) {
+  function getBalance(address _address) calculateGasCost public returns (uint256) {
     return address(_address).balance;
   }
 
@@ -425,7 +440,7 @@ contract ProxyWallet {
    * @param _balance uint256 Give balance to compare with.
    * @return True if the account balance has the exact same balance like give balance.
    */
-  function checkIfAccountHasExactBalance(address _address, uint256 _balance) public view returns (bool) {
+  function checkIfAccountHasExactBalance(address _address, uint256 _balance) calculateGasCost public returns (bool) {
     return getBalance(_address) == _balance;
   }
 
@@ -462,7 +477,7 @@ contract ProxyWallet {
    * @param _admin address The address of admin.
    * @return bool True if the function was executed successfully.
    */
-  function refundGasCosts(address _admin) isAuthorizedAdmin(_admin) calculateGasCost public returns (bool) {
+  function refundGasCosts(address _admin) isAuthorizedAdmin(_admin) public returns (bool) {
     transfer(_admin, gasCost);
     emit GasRefundEvent(msg.sender);
   }

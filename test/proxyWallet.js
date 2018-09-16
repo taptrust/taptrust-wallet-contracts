@@ -3,7 +3,7 @@ let util = require('ethereumjs-util');
 let Web3 = require('web3');
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
 let node = web3.version.node;
-console.log('Using node=' + node);
+console.log('Using node =>' + node);
 
 let testrpc = false;
 let geth = false;
@@ -16,9 +16,13 @@ if (node === 'Ganache') ganache = true;
 if (node === 'Parity') parity = true;
 console.log('testrpc=' + ganache);
 
+async function signMessage(hash) {
+  return web3.utils.keccak256("\x19Ethereum Signed Message:\n32", hash);
+}
+
 async function generateSignature(address, message) {
   console.log('Generating signature');
-  console.log('  address=' + address);
+  console.log('Address =>' + address);
   let encoded;
   /*if (testrpc) {
     encoded = web3.utils.sha3(message);
@@ -30,13 +34,13 @@ async function generateSignature(address, message) {
     encoded = web3.utils.sha3(message);
   }*/
   encoded = web3.utils.sha3(message);
-  console.log('  encoded message=' + encoded);
+  console.log('Encoded message =>' + encoded);
   return web3.eth.sign(encoded, address);
 }
 
 async function verifySignature(address, message, sig) {
   console.log('Verifying signature');
-  console.log('  address=' + address);
+  console.log('Address =>' + address);
   let encoded;
   /*if (testrpc) {
     //encoded = web3.sha3(message);
@@ -101,6 +105,15 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     })
   });
 
+  it("Check account has ETH balance", function () {
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return web3.eth.getBalance(accounts[0]);
+    }).then((balance) => {
+      assert.notEqual(web3.utils.fromWei(balance), 0);
+    })
+  });
+
   it('Check and save administrators account', function () {
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
@@ -115,6 +128,39 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       return ProxyWalletInstance.addAdministrator(accounts[1], {from: accounts[0]});
     }).then(assert.fail).catch(function (error) {
       assert(error.message, 'Admin account already exist.');
+    })
+  });
+
+  /*it('Generate and check signature', async function() {
+    return ProxyWallet.deployed().then(async function (instance) {
+      ProxyWalletInstance = instance;
+      let address = accounts[0];
+      const message = 'Lorem ipsum mark mark dolor sit';
+      console.log('Message =>', message);
+      let encoded = web3.utils.sha3(message);
+      console.log('Encoded message =>', encoded);
+      let sig = await signMessage(encoded);
+      console.log('Signature Message =>', sig);
+      return ProxyWalletInstance.signMessage(message);
+    }).then((result) => {
+      console.log('Signed message hash =>', result);
+      // assert.equal(result, accounts[0]);
+    });
+  });
+
+  it('Generate and check signature', function () {
+    let address = accounts[0];
+    console.log('Owner =>' + address);
+    const message = 'Lorem ipsum mark mark dolor sit';
+
+    return ProxyWallet.deployed().then(async function (instance) {
+      ProxyWalletInstance = instance;
+      console.log('Message =>', message);
+      let signedMessage = await signMessage(message);
+      console.log('Signed message from test message =>', signedMessage);
+      return ProxyWalletInstance.signMessage(message);
+    }).then((data) => {
+      console.log('Signed message from Proxy Wallet Instance =>', data);
     })
   });
 
@@ -134,14 +180,5 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     }).then((data) => {
       console.log(data);
     })
-  });
-
-  it("Check account has ETH balance", function () {
-    return ProxyWallet.deployed().then(function (instance) {
-      ProxyWalletInstance = instance;
-      return web3.eth.getBalance(accounts[0]);
-    }).then((balance) => {
-      console.log(web3.utils.fromWei(balance));
-    })
-  })
+  });*/
 });
