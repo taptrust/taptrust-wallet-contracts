@@ -312,4 +312,14 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       console.log(data);
     })
   });*/
+
+  it('Delete the contract', function () {
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.kill();
+    }).then(() => {
+      ProxyWalletInstance = undefined;
+      assert.equal(ProxyWalletInstance, undefined);
+    })
+  });
 });
