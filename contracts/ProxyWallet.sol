@@ -24,6 +24,9 @@ contract ProxyWallet {
   // Owner of the contract
   address public owner;
 
+  // Account balances mapping
+  mapping(address => uint256) balances;
+
   // Session state
   enum SessionState {Active, Closed}
 
@@ -166,7 +169,7 @@ contract ProxyWallet {
    * @param _address address Address of the account which balance needs to be checked.
    */
   modifier hasFunds(address _address) {
-    require(address(_address).balance > 0);
+    require(balances[_address] > 0);
     _;
   }
 
@@ -245,6 +248,7 @@ contract ProxyWallet {
    */
   constructor(address[] _administrators) onlyValidAdministrators(_administrators) public {
     owner = msg.sender;
+    balances[owner] = address(msg.sender).balance;
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
     }
@@ -331,6 +335,7 @@ contract ProxyWallet {
   function addAdministrator(address _admin) isOwner calculateGasCost public {
     require(!isAdministrator[_admin]);
     administrators.push(_admin);
+    balances[_admin] = address(_admin).balance;
     isAdministrator[_admin] = true;
     emit AdministratorAdded(_admin);
   }
@@ -452,7 +457,7 @@ contract ProxyWallet {
    * @return uint256 Balance of the account.
    */
   function getBalance(address _address) calculateGasCost public returns (uint256) {
-    return address(_address).balance;
+    return balances[_address];
   }
 
   /**
@@ -486,11 +491,13 @@ contract ProxyWallet {
   function transfer(address _from, address _to, uint256 _value) calculateGasCost public returns (bool) {
     require(_from != address(0));
     require(_to != address(0));
-    require(_value <= getBalance(_from));
-    uint256 ownerBalance = address(_from).balance;
+    require(_value <= balances[_from]);
+    balances[_from] -= _value;
+    balances[_to] += _value;
+    /*uint256 ownerBalance = address(_from).balance;
     uint256 receiverBalance = address(_to).balance;
     ownerBalance = ownerBalance.sub(_value);
-    receiverBalance = receiverBalance.add(_value);
+    receiverBalance = receiverBalance.add(_value);*/
     emit Transfer(_from, _to, _value);
     return true;
   }

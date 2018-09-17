@@ -111,7 +111,6 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       ProxyWalletInstance = instance;
       return web3.eth.getBalance(accounts[0]);
     }).then((balance) => {
-      console.log('Balance: ', web3.utils.fromWei(balance));
       assert.isDefined(balance);
     })
   });
@@ -236,8 +235,8 @@ contract('ProxyWallet Smart Contract', function (accounts) {
   });
 
   it('Execute transfer correctly', function () {
-    let accountOne = accounts[1];
-    let accountTwo = accounts[0];
+    let accountOne = accounts[0];
+    let accountTwo = accounts[1];
     let accountOneStartingBalance;
     let accountTwoStartingBalance;
     let accountOneEndingBalance;
@@ -260,7 +259,7 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     }).then(function (balance) {
       accountTwoEndingBalance = balance.toNumber();
       assert.isBelow(accountOneEndingBalance, accountOneStartingBalance, 'Amount wasn\'t correctly taken from the sender');
-      // assert.isAbove(accountTwoEndingBalance, accountTwoStartingBalance, 'Amount wasn\'t correctly sent to the receiver');
+      assert.isAbove(accountTwoEndingBalance, accountTwoStartingBalance, 'Amount wasn\'t correctly sent to the receiver');
     });
   });
 
