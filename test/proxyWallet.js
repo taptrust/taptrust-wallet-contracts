@@ -294,7 +294,7 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     }).then((data) => {
       console.log('Signed message from Proxy Wallet Instance =>', data);
     })
-  });
+  });*/
 
   it('Recover the address and check signature', function () {
     let address = accounts[0];
@@ -307,11 +307,28 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       let sig = await generateSignature(address, message);
       console.log('sig =>', sig);
       let ret = await verifySignature(address, message, sig);
+      console.log('ret =>', ret);
       return ProxyWalletInstance.recoverAddress(message, sig);
     }).then((data) => {
-      console.log(data);
+      assert.notEqual(data.logs[0].args.recoveredAddress, undefined);
     })
-  });*/
+  });
+
+  it('Refund all gas costs', function () {
+    let id = '0xe1c3972879c4D5fE2340c8DA8DFa927DcEBFa956';
+    let username = 'test user';
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.setNewUsername(id, username);
+    }).then(() => {
+      return ProxyWalletInstance.gasCost;
+    }).then(() => {
+      let admin = accounts[1];
+      return ProxyWalletInstance.refundGasCosts(admin);
+    }).then((data) => {
+      assert.notEqual(data.logs[1].args.gasCost.toNumber(), undefined);
+    })
+  });
 
   it('Delete the contract', function () {
     return ProxyWallet.deployed().then(function (instance) {

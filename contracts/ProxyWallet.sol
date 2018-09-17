@@ -230,9 +230,14 @@ contract ProxyWallet {
   event Transfer(address indexed from, address indexed to, uint256 value);
 
   /**
+   * Recovered address event
+   */
+  event RecoveredAddress(bytes32 messageHash, bytes sig, address recoveredAddress);
+
+  /**
    * Gas refund event
    */
-  event GasRefundEvent(address sender);
+  event GasRefundEvent(address indexed from, address to, uint256 gasCost);
 
   /**
    * @dev Proxy Wallet constructor.
@@ -402,6 +407,14 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Get current total gas cost.
+   * @return uint256 Current gas cost.
+   */
+  function getCurrentSpentGas() public view returns (uint256) {
+    return gasCost;
+  }
+
+  /**
    * @dev Sign message address which signed the message.
    * @param _messageHash bytes32 Hashed message that needs to be signed.
    * @return bytes32 Encoded message.
@@ -417,7 +430,9 @@ contract ProxyWallet {
    * @return address Returning address which signed the message.
    */
   function recoverAddress(bytes32 _messageHash, bytes _sig) calculateGasCost public returns (address) {
-    return _messageHash.recover(_sig);
+    address result = _messageHash.recover(_sig);
+    emit RecoveredAddress(_messageHash, _sig, result);
+    return result;
   }
 
   /**
@@ -487,7 +502,7 @@ contract ProxyWallet {
    */
   function refundGasCosts(address _admin) isAuthorizedAdmin(_admin) public returns (bool) {
     transfer(owner, _admin, gasCost);
-    emit GasRefundEvent(msg.sender);
+    emit GasRefundEvent(owner, _admin, gasCost);
   }
 
   /**
