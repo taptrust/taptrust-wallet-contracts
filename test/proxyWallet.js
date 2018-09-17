@@ -197,7 +197,7 @@ contract('ProxyWallet Smart Contract', function (accounts) {
 
   it('Start new session and add test session data', function () {
     let dataId = '0xbe0942d848991C0b915CA6520c5F064dcF917c22';
-    let deviceId = 0;
+    let deviceId = 0x659541FECCE1B053000657BBF08aB6E67406F711;
     let first = '0x0';
     let second = '0x0';
     let hashed = '0x0';
@@ -207,15 +207,61 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     let v = 0;
     let startTime = 0;
     let duration = 0;
-    let sessionState = 1;
-    return ProxyWallet.deployed().then(async function (instance) {
+    let sessionState = 0;
+    return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
       return ProxyWalletInstance.startSession(dataId, deviceId, first, second, hashed, subject, r, s, v, startTime, duration);
     }).then((data) => {
       assert.equal(data.logs[0].args.deviceId, deviceId);
       assert.equal(data.logs[0].args.dataId, dataId);
-      assert.equal(data.logs[0].args.state.s, sessionState);
+      assert.equal(data.logs[0].args.state.toNumber(), sessionState);
+      return ProxyWalletInstance.checkSessionState(dataId);
+    }).then((data) => {
+      assert.equal(data.logs[0].args.state.toNumber(), sessionState);
     })
+  });
+
+  it('Close the session and delete test data', function () {
+    let dataId = '0xbe0942d848991C0b915CA6520c5F064dcF917c22';
+    let deviceId = 0x659541FECCE1B053000657BBF08aB6E67406F711;
+    let sessionState = 1;
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.closeSession(dataId);
+    }).then((data) => {
+      assert.equal(data.logs[1].args.deviceId, deviceId);
+      assert.equal(data.logs[1].args.dataId, dataId);
+      assert.equal(data.logs[1].args.state.toNumber(), sessionState);
+    })
+  });
+
+  it('Execute transfer correctly', function () {
+    let accountOne = accounts[1];
+    let accountTwo = accounts[0];
+    let accountOneStartingBalance;
+    let accountTwoStartingBalance;
+    let accountOneEndingBalance;
+    let accountTwoEndingBalance;
+    let amount = 100000000000;
+    return ProxyWallet.deployed().then(function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.getBalance.call(accountOne);
+    }).then(function (balance) {
+      accountOneStartingBalance = balance.toNumber();
+      return ProxyWalletInstance.getBalance.call(accountTwo);
+    }).then(function (balance) {
+      accountTwoStartingBalance = balance.toNumber();
+      return ProxyWalletInstance.transfer(accountOne, accountTwo, amount, {from: accountOne});
+    }).then(function () {
+      return ProxyWalletInstance.getBalance.call(accountOne);
+    }).then(function (balance) {
+      accountOneEndingBalance = balance.toNumber();
+      return ProxyWalletInstance.getBalance.call(accountTwo);
+    }).then(function (balance) {
+      accountTwoEndingBalance = balance.toNumber();
+      assert.isBelow(accountOneEndingBalance, accountOneStartingBalance, 'Amount wasn\'t correctly taken from the sender');
+      // assert.isAbove(accountTwoEndingBalance, accountTwoStartingBalance, 'Amount wasn\'t correctly sent to the receiver');
+    });
   });
 
   /*it('Generate and check signature', async function() {

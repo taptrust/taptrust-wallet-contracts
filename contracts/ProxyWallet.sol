@@ -301,9 +301,11 @@ contract ProxyWallet {
    */
   function closeSession(string dataId) checkIfAddedUser(dataId) calculateGasCost public {
     require(sessionData[dataId].deviceId != 0);
-    address deviceId = sessionData[dataId].deviceId;
-    delete sessionData[dataId];
-    emit SessionEvent(deviceId, dataId, SessionState.Closed);
+    if (checkSessionState(dataId) == SessionState.Active) {
+      address deviceId = sessionData[dataId].deviceId;
+      delete sessionData[dataId];
+      emit SessionEvent(deviceId, dataId, SessionState.Closed);
+    }
   }
 
   /**
@@ -313,6 +315,7 @@ contract ProxyWallet {
    */
   function checkSessionState(string dataId) calculateGasCost public returns (SessionState) {
     require(sessionData[dataId].state == SessionState.Active || sessionData[dataId].state == SessionState.Closed);
+    emit SessionEvent(sessionData[dataId].deviceId, dataId, sessionData[dataId].state);
     return sessionData[dataId].state;
   }
 
@@ -449,28 +452,31 @@ contract ProxyWallet {
 
   /**
    * @dev Check if its one time transaction and execute transfer.
+   * @param _from address The address from which to transfer.
    * @param _to address The address to transfer to.
    * @param _value uint256 The amount to be transferred.
    * @return bool True if the function was executed successfully.
    */
-  function executeOneTimeTransaction(address _to, uint256 _value) isOneTimeTransaction(TransactionType.OneTime) public returns (bool) {
-    transfer(_to, _value);
+  function executeOneTimeTransaction(address _from, address _to, uint256 _value) isOneTimeTransaction(TransactionType.OneTime) public returns (bool) {
+    transfer(_from, _to, _value);
   }
 
   /**
    * @dev Transfer funds for a specified address.
+   * @param _from address The address from which to transfer.
    * @param _to address The address to transfer to.
    * @param _value uint256 The amount to be transferred.
    * @return bool True if the function was executed successfully.
    */
-  function transfer(address _to, uint256 _value) calculateGasCost public returns (bool) {
+  function transfer(address _from, address _to, uint256 _value) calculateGasCost public returns (bool) {
+    require(_from != address(0));
     require(_to != address(0));
-    require(_value <= getBalance(msg.sender));
-    uint256 ownerBalance = address(msg.sender).balance;
+    require(_value <= getBalance(_from));
+    uint256 ownerBalance = address(_from).balance;
     uint256 receiverBalance = address(_to).balance;
     ownerBalance = ownerBalance.sub(_value);
     receiverBalance = receiverBalance.add(_value);
-    emit Transfer(msg.sender, _to, _value);
+    emit Transfer(_from, _to, _value);
     return true;
   }
 
@@ -480,7 +486,7 @@ contract ProxyWallet {
    * @return bool True if the function was executed successfully.
    */
   function refundGasCosts(address _admin) isAuthorizedAdmin(_admin) public returns (bool) {
-    transfer(_admin, gasCost);
+    transfer(owner, _admin, gasCost);
     emit GasRefundEvent(msg.sender);
   }
 
