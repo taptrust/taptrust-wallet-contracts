@@ -222,7 +222,7 @@ contract ProxyWallet {
   /**
    * Fired when session data is added/changed
    */
-  event SessionEvent(address indexed deviceId, string indexed dataId, SessionState state);
+  event SessionEvent(address indexed deviceId, string dataId, SessionState state);
 
   /**
    * Transfer event
@@ -290,8 +290,8 @@ contract ProxyWallet {
    * @param startTime uint256 Session start time value.
    * @param duration uint256 Session length value.
    */
-  function addSessionData(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration, TransactionType transactionType) checkIfAddedUser(dataId) isNotOneTimeTransaction(transactionType) calculateGasCost public {
-    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, Times(startTime, duration), SessionState.Active, transactionType);
+  function startSession(string dataId, address deviceId, bytes32 first, bytes32 second, bytes32 hashed, string subject, bytes32 r, bytes32 s, uint8 v, uint256 startTime, uint256 duration) checkIfAddedUser(dataId) isNotOneTimeTransaction(TransactionType.Session) calculateGasCost public {
+    sessionData[dataId] = Data(deviceId, first, second, subject, hashed, r, s, v, Times(startTime, duration), SessionState.Active, TransactionType.Session);
     emit SessionEvent(deviceId, dataId, SessionState.Active);
   }
 
@@ -449,12 +449,11 @@ contract ProxyWallet {
 
   /**
    * @dev Check if its one time transaction and execute transfer.
-   * @param _transactionType TransactionType Transaction type (one time transaction, session timed transaction)
    * @param _to address The address to transfer to.
    * @param _value uint256 The amount to be transferred.
    * @return bool True if the function was executed successfully.
    */
-  function checkIfOneTimeTransaction(TransactionType _transactionType, address _to, uint256 _value) isOneTimeTransaction(_transactionType) public returns (bool) {
+  function executeOneTimeTransaction(address _to, uint256 _value) isOneTimeTransaction(TransactionType.OneTime) public returns (bool) {
     transfer(_to, _value);
   }
 

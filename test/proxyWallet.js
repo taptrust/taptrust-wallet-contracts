@@ -4,6 +4,7 @@ let Web3 = require('web3');
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
 let node = web3.version.node;
 console.log('Using node =>' + node);
+let BigNumber = web3.utils.BN;
 
 let testrpc = false;
 let geth = false;
@@ -191,6 +192,29 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       return ProxyWalletInstance.setNewUserPublicKey(id, userPublicKey);
     }).then((receipt) => {
       assert.equal(receipt.logs[0].args.publicKey, userPublicKey, 'correct userPublicKey added.');
+    })
+  });
+
+  it('Start new session and add test session data', function () {
+    let dataId = '0xbe0942d848991C0b915CA6520c5F064dcF917c22';
+    let deviceId = 0;
+    let first = '0x0';
+    let second = '0x0';
+    let hashed = '0x0';
+    let subject = '0x0';
+    let r = '0x0';
+    let s = '0x0';
+    let v = 0;
+    let startTime = 0;
+    let duration = 0;
+    let sessionState = 1;
+    return ProxyWallet.deployed().then(async function (instance) {
+      ProxyWalletInstance = instance;
+      return ProxyWalletInstance.startSession(dataId, deviceId, first, second, hashed, subject, r, s, v, startTime, duration);
+    }).then((data) => {
+      assert.equal(data.logs[0].args.deviceId, deviceId);
+      assert.equal(data.logs[0].args.dataId, dataId);
+      assert.equal(data.logs[0].args.state.s, sessionState);
     })
   });
 
