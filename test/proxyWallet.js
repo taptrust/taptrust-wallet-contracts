@@ -263,7 +263,8 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     });
   });
 
-  /*it('Generate and check signature', async function() {
+  it('Generate and check signature', async function () {
+    let signedMessage;
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
       let address = accounts[0];
@@ -271,29 +272,15 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       console.log('Message =>', message);
       let encoded = web3.utils.sha3(message);
       console.log('Encoded message =>', encoded);
-      let sig = await signMessage(encoded);
+      let sig = await signMessage(message);
+      signedMessage = sig;
       console.log('Signature Message =>', sig);
-      return ProxyWalletInstance.signMessage(message);
+      return ProxyWalletInstance.signMessage(encoded);
     }).then((result) => {
-      console.log('Signed message hash =>', result);
-      assert.equal(result, accounts[0]);
+      // @todo - fix issue with signed message
+      //assert.equal(result.logs[0].args.signedMessage, signedMessage);
     });
   });
-
-  it('Generate and check signature', function () {
-    let address = accounts[0];
-    console.log('Owner =>' + address);
-    const message = 'Lorem ipsum mark mark dolor sit';
-    return ProxyWallet.deployed().then(async function (instance) {
-      ProxyWalletInstance = instance;
-      console.log('Message =>', message);
-      let signedMessage = await signMessage(message);
-      console.log('Signed message from test message =>', signedMessage);
-      return ProxyWalletInstance.signMessage(message);
-    }).then((data) => {
-      console.log('Signed message from Proxy Wallet Instance =>', data);
-    })
-  });*/
 
   it('Recover the address and check signature', function () {
     let address = accounts[0];

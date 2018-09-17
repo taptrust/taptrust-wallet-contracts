@@ -238,6 +238,12 @@ contract ProxyWallet {
   event RecoveredAddress(bytes32 messageHash, bytes sig, address recoveredAddress);
 
   /**
+   * Signed message event
+   */
+  event SignedMessage(bytes32 messageHash, bytes32 signedMessage);
+
+
+  /**
    * Gas refund event
    */
   event GasRefundEvent(address indexed from, address to, uint256 gasCost);
@@ -425,7 +431,9 @@ contract ProxyWallet {
    * @return bytes32 Encoded message.
    */
   function signMessage(bytes32 _messageHash) calculateGasCost public returns (bytes32) {
-    return _messageHash.toEthSignedMessageHash();
+    bytes32 result = _messageHash.toEthSignedMessageHash();
+    emit SignedMessage(_messageHash, result);
+    return result;
   }
 
   /**
