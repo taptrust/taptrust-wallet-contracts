@@ -1,10 +1,9 @@
 let ProxyWallet = artifacts.require('ProxyWallet');
-let util = require('ethereumjs-util');
+let utils = require('ethereumjs-util');
 let Web3 = require('web3');
 let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
 let node = web3.version.node;
 console.log('Using node =>' + node);
-let BigNumber = web3.utils.BN;
 
 let testrpc = false;
 let geth = false;
@@ -15,65 +14,91 @@ if (node === 'Geth') geth = true;
 if (node === 'EthereumJS TestRPC') testrpc = true;
 if (node === 'Ganache') ganache = true;
 if (node === 'Parity') parity = true;
-console.log('testrpc=' + ganache);
+console.log('testrpc =>' + ganache);
 
-async function signMessage(hash) {
-  return web3.utils.keccak256("\x19Ethereum Signed Message:\n32", hash);
+/**
+ * Hash the message and encode it
+ *
+ * @param message
+ * @return {Promise<String>}
+ */
+async function hashMessage(message) {
+  const messageHex = Buffer.from(utils.sha3(message).toString('hex'), 'hex');
+  const prefix = utils.toBuffer('\u0019Ethereum Signed Message:\n' + messageHex.length.toString());
+  return utils.bufferToHex(utils.sha3(Buffer.concat([prefix, messageHex])));
 }
 
+/**
+ * Generate signature hash with users private/public key pair and message
+ *
+ * @param address
+ * @param message
+ * @return {Promise<string>}
+ */
 async function generateSignature(address, message) {
   console.log('Generating signature');
   console.log('Address =>' + address);
   let encoded;
-  /*if (testrpc) {
+  if (testrpc) {
     encoded = web3.utils.sha3(message);
-  }
-  if (geth || parity) {
+  } else if (geth || parity) {
     encoded = '0x' + Buffer.from(message).toString('hex');
-  }
-  if (ganache) {
+  } else if (ganache) {
     encoded = web3.utils.sha3(message);
-  }*/
-  encoded = web3.utils.sha3(message);
+  } else {
+    encoded = web3.utils.sha3(message);
+  }
   console.log('Encoded message =>' + encoded);
   return web3.eth.sign(encoded, address);
 }
 
+/**
+ * Verify signature of user by retrieving users address from signed message
+ *
+ * @param address
+ * @param message
+ * @param sig
+ * @return {Promise<{}>}
+ */
 async function verifySignature(address, message, sig) {
   console.log('Verifying signature');
   console.log('Address =>' + address);
   let encoded;
-  /*if (testrpc) {
+  if (testrpc) {
     //encoded = web3.sha3(message);
-    encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
+    encoded = utils.hashPersonalMessage(utils.toBuffer(web3.utils.sha3(message)));
   } else if (geth || parity) {
     //encoded = web3.sha3('\x19Ethereum Signed Message:\n32' + web3.sha3(message).substr(2));
-    encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
+    encoded = utils.hashPersonalMessage(utils.toBuffer(web3.utils.sha3(message)));
   } else if (ganache) {
-    encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
-  }*/
-  encoded = util.hashPersonalMessage(util.toBuffer(web3.utils.sha3(message)));
-  console.log('  encoded message=' + encoded.toString('hex'));
+    encoded = utils.hashPersonalMessage(utils.toBuffer(web3.utils.sha3(message)));
+  } else {
+    encoded = utils.hashPersonalMessage(utils.toBuffer(web3.utils.sha3(message)));
+  }
+  console.log('Encoded message =>' + encoded.toString('hex'));
+
+  let r;
+  let s;
+  let v;
+
   if (sig.slice(0, 2) === '0x') sig = sig.substr(2);
-  /*if (testrpc || geth) {
-    let r = '0x' + sig.substr(0, 64);
-    let s = '0x' + sig.substr(64, 64);
-    let v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
-  }
-  if (parity) {
-    v = '0x' + sig.substr(0, 2);
-    r = '0x' + sig.substr(2, 64);
-    s = '0x' + sig.substr(66, 64);
-  }
-  if (ganache) {
+  if (testrpc || geth) {
     r = '0x' + sig.substr(0, 64);
     s = '0x' + sig.substr(64, 64);
     v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
-  }*/
-
-  r = '0x' + sig.substr(0, 64);
-  s = '0x' + sig.substr(64, 64);
-  v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
+  } else if (parity) {
+    r = '0x' + sig.substr(2, 64);
+    s = '0x' + sig.substr(66, 64);
+    v = '0x' + sig.substr(0, 2);
+  } else if (ganache) {
+    r = '0x' + sig.substr(0, 64);
+    s = '0x' + sig.substr(64, 64);
+    v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
+  } else {
+    r = '0x' + sig.substr(0, 64);
+    s = '0x' + sig.substr(64, 64);
+    v = web3.utils.toDecimal(sig.substr(128, 2)) + 27;
+  }
 
   console.log('  r: ' + r);
   console.log('  s: ' + s);
@@ -267,18 +292,16 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     let signedMessage;
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
-      let address = accounts[0];
       const message = 'Lorem ipsum mark mark dolor sit';
       console.log('Message =>', message);
       let encoded = web3.utils.sha3(message);
       console.log('Encoded message =>', encoded);
-      let sig = await signMessage(message);
+      let sig = await hashMessage(message);
       signedMessage = sig;
       console.log('Signature Message =>', sig);
       return ProxyWalletInstance.signMessage(encoded);
     }).then((result) => {
-      // @todo - fix issue with signed message
-      //assert.equal(result.logs[0].args.signedMessage, signedMessage);
+      assert.equal(result.logs[0].args.signedMessage, signedMessage);
     });
   });
 
@@ -320,9 +343,8 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
       return ProxyWalletInstance.kill();
-    }).then(() => {
-      ProxyWalletInstance = undefined;
-      assert.equal(ProxyWalletInstance, undefined);
+    }).then((receipt) => {
+      assert.equal(receipt.logs[0].args.contractOwner, accounts[0]);
     })
   });
 });

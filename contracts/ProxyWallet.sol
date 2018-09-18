@@ -249,9 +249,14 @@ contract ProxyWallet {
   event GasRefundEvent(address indexed from, address to, uint256 gasCost);
 
   /**
-   * @dev Proxy Wallet constructor.
-   * @param _administrators address[] List of administrator addresses.
+   * Contract destroyed event
    */
+  event ContractDestroyed(address contractOwner);
+
+/**
+ * @dev Proxy Wallet constructor.
+ * @param _administrators address[] List of administrator addresses.
+ */
   constructor(address[] _administrators) onlyValidAdministrators(_administrators) public {
     owner = msg.sender;
     balances[owner] = address(msg.sender).balance;
@@ -524,6 +529,7 @@ contract ProxyWallet {
    * @dev Destroy the contract.
    */
   function kill() isOwner public {
+    emit ContractDestroyed(msg.sender);
     selfdestruct(msg.sender);
   }
 }
