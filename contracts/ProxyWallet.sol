@@ -507,10 +507,6 @@ contract ProxyWallet {
     require(_value <= balances[_from]);
     balances[_from] -= _value;
     balances[_to] += _value;
-    /*uint256 ownerBalance = address(_from).balance;
-    uint256 receiverBalance = address(_to).balance;
-    ownerBalance = ownerBalance.sub(_value);
-    receiverBalance = receiverBalance.add(_value);*/
     emit Transfer(_from, _to, _value);
     return true;
   }
