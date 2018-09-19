@@ -6,7 +6,7 @@ This project is generated with [Angular CLI](https://cli.angular.io/).
 
 ## Prerequisites
 
-In order to run the Truffle box, you will need [Node.js](https://nodejs.org) (tested with version 8.9.x). This will include `npm`, needed
+In order to run this Truffle box, you will need [Node.js](https://nodejs.org) (tested with version 8.9.x). This will include `npm`, needed
 to install dependencies. In order install these dependencies, you will also need [Python](https://www.python.org) (version 2.7.x) and
 [git](https://git-scm.com/downloads). You will also need the [MetaMask](https://metamask.io/) plugin for Chrome.
 
@@ -18,22 +18,26 @@ to install dependencies. In order install these dependencies, you will also need
   npm install -g @angular/cli
   npm install -g ganache-cli
   ```
-
+  
 2. Clone the repository
   ```bash
   git clone git@github.com:taptrust/taptrust-wallet-contracts.git
   ```
-
-3. Run your Ethereum client. For Ganache CLI:
+a) Run your Ethereum client. For Ganache CLI:
   ```bash
   ganache-cli
   ```
+ 
+b) Run your Ethereum client. For Ganache GUI:
+   ```bash
+   Download Ganache GUI tool at https://truffleframework.com/ganache and run it
+   ``` 
 Note the mnemonic 12-word phrase printed on startup, you will need it later.
 
-4. Compile and migrate your contracts.
+3. Compile and migrate your contracts.
   ```bash
   truffle compile 
-  truffle migrate
+  truffle migrate --network ganache
   ```
 
 ## Configuration
@@ -66,7 +70,7 @@ The app is now served on localhost:4200
 
 2. Running the Truffle tests:
   ```bash
-  truffle test
+  truffle test ./test/"NameOfTheFile".js --network ganache
   ```
 
 3. Running Protactor end-to-end tests
