@@ -24,6 +24,9 @@ contract ProxyWallet {
   // Owner of the contract
   address public owner;
 
+  // Account balances mapping
+  mapping(address => uint256) balances;
+
   // Session state
   enum SessionState {Active, Closed}
 
@@ -166,7 +169,7 @@ contract ProxyWallet {
    * @param _address address Address of the account which balance needs to be checked.
    */
   modifier hasFunds(address _address) {
-    require(address(_address).balance > 0);
+    require(balances[_address] > 0);
     _;
   }
 
@@ -230,16 +233,33 @@ contract ProxyWallet {
   event Transfer(address indexed from, address indexed to, uint256 value);
 
   /**
-   * Gas refund event
+   * Recovered address event
    */
-  event GasRefundEvent(address sender);
+  event RecoveredAddress(bytes32 messageHash, bytes sig, address recoveredAddress);
 
   /**
-   * @dev Proxy Wallet constructor.
-   * @param _administrators address[] List of administrator addresses.
+   * Signed message event
    */
+  event SignedMessage(bytes32 messageHash, bytes32 signedMessage);
+
+
+  /**
+   * Gas refund event
+   */
+  event GasRefundEvent(address indexed from, address to, uint256 gasCost);
+
+  /**
+   * Contract destroyed event
+   */
+  event ContractDestroyed(address contractOwner);
+
+/**
+ * @dev Proxy Wallet constructor.
+ * @param _administrators address[] List of administrator addresses.
+ */
   constructor(address[] _administrators) onlyValidAdministrators(_administrators) public {
     owner = msg.sender;
+    balances[owner] = address(msg.sender).balance;
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
     }
@@ -326,6 +346,7 @@ contract ProxyWallet {
   function addAdministrator(address _admin) isOwner calculateGasCost public {
     require(!isAdministrator[_admin]);
     administrators.push(_admin);
+    balances[_admin] = address(_admin).balance;
     isAdministrator[_admin] = true;
     emit AdministratorAdded(_admin);
   }
@@ -402,12 +423,22 @@ contract ProxyWallet {
   }
 
   /**
+   * @dev Get current total gas cost.
+   * @return uint256 Current gas cost.
+   */
+  function getCurrentSpentGas() public view returns (uint256) {
+    return gasCost;
+  }
+
+  /**
    * @dev Sign message address which signed the message.
    * @param _messageHash bytes32 Hashed message that needs to be signed.
    * @return bytes32 Encoded message.
    */
   function signMessage(bytes32 _messageHash) calculateGasCost public returns (bytes32) {
-    return _messageHash.toEthSignedMessageHash();
+    bytes32 result = _messageHash.toEthSignedMessageHash();
+    emit SignedMessage(_messageHash, result);
+    return result;
   }
 
   /**
@@ -417,7 +448,9 @@ contract ProxyWallet {
    * @return address Returning address which signed the message.
    */
   function recoverAddress(bytes32 _messageHash, bytes _sig) calculateGasCost public returns (address) {
-    return _messageHash.recover(_sig);
+    address result = _messageHash.recover(_sig);
+    emit RecoveredAddress(_messageHash, _sig, result);
+    return result;
   }
 
   /**
@@ -437,7 +470,7 @@ contract ProxyWallet {
    * @return uint256 Balance of the account.
    */
   function getBalance(address _address) calculateGasCost public returns (uint256) {
-    return address(_address).balance;
+    return balances[_address];
   }
 
   /**
@@ -471,11 +504,9 @@ contract ProxyWallet {
   function transfer(address _from, address _to, uint256 _value) calculateGasCost public returns (bool) {
     require(_from != address(0));
     require(_to != address(0));
-    require(_value <= getBalance(_from));
-    uint256 ownerBalance = address(_from).balance;
-    uint256 receiverBalance = address(_to).balance;
-    ownerBalance = ownerBalance.sub(_value);
-    receiverBalance = receiverBalance.add(_value);
+    require(_value <= balances[_from]);
+    balances[_from] -= _value;
+    balances[_to] += _value;
     emit Transfer(_from, _to, _value);
     return true;
   }
@@ -487,13 +518,14 @@ contract ProxyWallet {
    */
   function refundGasCosts(address _admin) isAuthorizedAdmin(_admin) public returns (bool) {
     transfer(owner, _admin, gasCost);
-    emit GasRefundEvent(msg.sender);
+    emit GasRefundEvent(owner, _admin, gasCost);
   }
 
   /**
    * @dev Destroy the contract.
    */
   function kill() isOwner public {
+    emit ContractDestroyed(msg.sender);
     selfdestruct(msg.sender);
   }
 }
