@@ -253,10 +253,10 @@ contract ProxyWallet {
    */
   event ContractDestroyed(address contractOwner);
 
-/**
- * @dev Proxy Wallet constructor.
- * @param _administrators address[] List of administrator addresses.
- */
+  /**
+   * @dev Proxy Wallet constructor.
+   * @param _administrators address[] List of administrator addresses.
+   */
   constructor(address[] _administrators) onlyValidAdministrators(_administrators) public {
     owner = msg.sender;
     balances[owner] = address(msg.sender).balance;
@@ -505,8 +505,8 @@ contract ProxyWallet {
     require(_from != address(0));
     require(_to != address(0));
     require(_value <= balances[_from]);
-    balances[_from] -= _value;
-    balances[_to] += _value;
+    balances[_from] = balances[_from].sub(_value);
+    balances[_to] = balances[_to].add(_value);
     emit Transfer(_from, _to, _value);
     return true;
   }
