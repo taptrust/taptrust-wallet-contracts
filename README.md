@@ -12,11 +12,12 @@ to install dependencies. In order install these dependencies, you will also need
 
 ## Building
 
-1. Install truffle, Angular CLI and an Ethereum client. If you don't have a test environment, we recommend ganache-cli
+1. Install truffle, Angular CLI and an Ethereum client. If you don't have a test environment, we recommend ganache-cli or Ganache GUI app
   ```bash
   npm install -g truffle
   npm install -g @angular/cli
-  npm install -g ganache-cli
+  a) npm install -g ganache-cli
+  b) Download Ganache GUI app at https://truffleframework.com/ganache  
   ```
   
 2. Clone the repository
@@ -30,7 +31,7 @@ a) Run your Ethereum client. For Ganache CLI:
  
 b) Run your Ethereum client. For Ganache GUI:
    ```bash
-   Download Ganache GUI tool at https://truffleframework.com/ganache and run it
+   Run Ganache GUI app
    ``` 
 Note the mnemonic 12-word phrase printed on startup, you will need it later.
 
