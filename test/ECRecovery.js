@@ -7,7 +7,8 @@ require('chai')
   .should();
 
 /**
- * Hash and add same prefix to the hash that ganache use.
+ * Hash and add same prefix to the hash that ganache use function.
+ *
  * @param {string} message the plaintext/ascii/original message
  * @return {string} the hash of the message, prefixed, and then hashed again
  */
@@ -17,12 +18,25 @@ function hashMessage(message) {
   return utils.bufferToHex(utils.sha3(Buffer.concat([prefix, messageHex])));
 }
 
-// signs message in node (auto-applies prefix)
-// message must be in hex already! will not be autoconverted!
+/**
+ * Signs message in node (auto-applies prefix) function.
+ * Message must be in hex already! will not be autoconverted!
+ *
+ * @param {string} signer Signer hash
+ * @param {string} message The plaintext/ascii/original message
+ * @return {Promise<string>}
+ */
 async function signMessage(signer, message) {
   return web3.eth.sign(message, signer);
 }
 
+/**
+ * Expecting a throw error function.
+ *
+ * @param promise
+ * @param message
+ * @return {Promise<void>}
+ */
 async function expectThrow(promise, message) {
   try {
     await promise;
@@ -123,13 +137,4 @@ contract('ECRecovery', function (accounts) {
       assert.equal(receipt.logs[0].args.signedMessage, hashMessage(TEST_MESSAGE));
     })
   });
-
-  /*
-  context('toEthSignedMessage', () => {
-    it('should prefix hashes correctly', async function () {
-      const hashedMessage = web3.sha3(TEST_MESSAGE);
-      const ethMessage = await proxyWallet.signMessage(hashedMessage);
-      ethMessage.should.eq(hashMessage(TEST_MESSAGE));
-    });
-  });*/
 });
