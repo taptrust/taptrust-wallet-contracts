@@ -41,6 +41,18 @@ contract ENSRegistry is ENS {
     accountRegistry[_node].owner = _owner;
   }
 
+  function createUser() {
+    // @todo
+  }
+
+  function removeUser() {
+    // @todo
+  }
+
+  function forwardENSsubnode() {
+    // @todo
+  }
+
   /**
    * @dev Transfers ownership of a subnode keccak256(node, label) to a new address. May only be called by the owner of the parent node.
    * @param _node bytes32 The parent node.
