@@ -15,37 +15,37 @@ import './SafeMath.sol';
  */
 contract ProxyWallet {
 
-  // Using SafeMath library for math expressions
+  // Using SafeMath library for math expressions.
   using SafeMath for uint256;
 
-  // Hooking up bytes32 with ERRecovery library
+  // Hooking up bytes32 with ERRecovery library.
   using ECRecovery for bytes32;
 
-  // Owner of the contract
+  // Owner of the contract.
   address public owner;
 
-  // Account balances mapping
+  // Account balances mapping.
   mapping(address => uint256) balances;
 
-  // Session state
+  // Session state.
   enum SessionState {Active, Closed}
 
-  // Transaction type
+  // Transaction type.
   enum TransactionType {OneTime, Session}
 
-  // User data structure
+  // User data structure.
   struct UserData {
     string username;
     string userPublicKey;
   }
 
-  // Times data structure
+  // Times data structure.
   struct Times {
     uint256 startTime;
     uint256 duration;
   }
 
-  // Session data structure
+  // Session data structure.
   struct Data {
     address deviceId;
     bytes32 keyOne;
@@ -60,28 +60,28 @@ contract ProxyWallet {
     TransactionType transactionType;
   }
 
-  // Users data mapping
+  // Users data mapping.
   mapping(string => UserData) private users;
 
-  // Session data mapping
+  // Session data mapping.
   mapping(string => Data) private sessionData;
 
-  // List of administrator addresses
+  // List of administrator addresses.
   address[] public administrators;
 
-  // List of administrator checks for each address
+  // List of administrator checks for each address.
   mapping(address => bool) public isAdministrator;
 
-  // Start gas value
+  // Start gas value.
   uint256 remainingGasStart;
 
-  // Spent gas value
+  // Spent gas value.
   uint256 remainingGasEnd;
 
-  // Used gas calculation
+  // Used gas calculation.
   uint256 usedGas;
 
-  // Total cost of gas for all methods
+  // Total cost of gas for all methods.
   uint256 gasCost;
 
   /**
@@ -93,7 +93,7 @@ contract ProxyWallet {
   }
 
   /**
-   * @dev Checks if the admin is correct and belongs to list of administrators
+   * @dev Checks if the admin is correct and belongs to list of administrators.
    * @param _admin address Administrator address.
    */
   modifier isAuthorizedAdmin(address _admin) {
@@ -174,8 +174,8 @@ contract ProxyWallet {
   }
 
   /**
-   * @dev Checks if its one time transaction
-   * @param _transactionType TransactionType Type of transaction
+   * @dev Checks if its one time transaction.
+   * @param _transactionType TransactionType Type of transaction.
    */
   modifier isOneTimeTransaction(TransactionType _transactionType) {
     require(_transactionType == TransactionType.OneTime);
@@ -183,8 +183,8 @@ contract ProxyWallet {
   }
 
   /**
-   * @dev Checks if its not one time transaction
-   * @param _transactionType TransactionType Type of transaction
+   * @dev Checks if its not one time transaction.
+   * @param _transactionType TransactionType Type of transaction.
    */
   modifier isNotOneTimeTransaction(TransactionType _transactionType) {
     require(_transactionType != TransactionType.OneTime);
@@ -196,7 +196,7 @@ contract ProxyWallet {
    * Calculation of the used gas which is used for every function,
    * that executes some kind of interaction with Smart Contract and adds on calculation amount of gas used so far.
    * Using usedGas variable to store total amount of gas used and gasCost variable to store total amount of gas value,
-   * used so far (including the current function being run)
+   * used so far (including the current function being run).
    */
   modifier calculateGasCost() {
     remainingGasStart = gasleft();
@@ -223,33 +223,33 @@ contract ProxyWallet {
   event AdministratorAdded(address indexed admin);
 
   /**
-   * Fired when session data is added/changed
+   * Fired when session data is added/changed.
    */
   event SessionEvent(address indexed deviceId, string dataId, SessionState state);
 
   /**
-   * Transfer event
+   * Transfer event.
    */
   event Transfer(address indexed from, address indexed to, uint256 value);
 
   /**
-   * Recovered address event
+   * Recovered address event.
    */
   event RecoveredAddress(bytes32 messageHash, bytes sig, address recoveredAddress);
 
   /**
-   * Signed message event
+   * Signed message event.
    */
   event SignedMessage(bytes32 messageHash, bytes32 signedMessage);
 
 
   /**
-   * Gas refund event
+   * Gas refund event.
    */
   event GasRefundEvent(address indexed from, address to, uint256 gasCost);
 
   /**
-   * Contract destroyed event
+   * Contract destroyed event.
    */
   event ContractDestroyed(address contractOwner);
 
@@ -297,7 +297,7 @@ contract ProxyWallet {
   }
 
   /**
-   * @dev Add session data and start session
+   * @dev Add session data and start session.
    * @param dataId string Data id value.
    * @param deviceId string Device id value.
    * @param first bytes32 First key.

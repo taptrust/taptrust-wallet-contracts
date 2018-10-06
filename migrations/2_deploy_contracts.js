@@ -3,6 +3,8 @@ let MetaCoin = artifacts.require('MetaCoin');
 let ECRecovery = artifacts.require('ECRecovery');
 let SafeMath = artifacts.require('SafeMath');
 let ProxyWallet = artifacts.require('ProxyWallet');
+let ENS = artifacts.require('ENS');
+let ENSRegistry = artifacts.require('ENSRegistry');
 
 module.exports = function (deployer, network, accounts) {
   const administrators = [
@@ -23,4 +25,7 @@ module.exports = function (deployer, network, accounts) {
   deployer.link(SafeMath, ProxyWallet);
 
   deployer.deploy(ProxyWallet, administrators);
+
+  const ENSadministrator = accounts[5];
+  deployer.deploy(ENSRegistry, ENSadministrator);
 };
