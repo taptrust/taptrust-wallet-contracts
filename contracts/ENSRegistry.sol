@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import './ENS.sol';
+import './ProxyWallet.sol';
 
 /**
  * @title ENS Registry.
@@ -22,6 +23,12 @@ contract ENSRegistry is ENS {
   // Administrator address.
   address public administrator;
 
+  // Administrators array
+  address[] administrators;
+
+  // Proxy Wallet Contract
+  ProxyWallet walletContract;
+
   /**
    * @dev Permits modifications only by the owner of the specified node.
    * @param _node bytes32 Node param.
@@ -41,7 +48,16 @@ contract ENSRegistry is ENS {
   }
 
   /**
-   * @dev Checks if the administrator's address is valid or not.
+   * @dev Checks if user is added.
+   * @param _username bytes32 Username.
+   */
+  modifier isNotAddedUser(bytes32 _username) {
+    require(bytes32(accountRegistry[_username].owner).length > 0);
+    _;
+  }
+
+  /**
+   * @dev Checks if user is not added.
    * @param _username bytes32 Username.
    */
   modifier isNotAddedUser(bytes32 _username) {
@@ -76,13 +92,33 @@ contract ENSRegistry is ENS {
     accountRegistry[_node].owner = _owner;
   }
 
-  function createUser(bytes32 _username) isOnlyAdministrator(msg.sender) isNotAddedUser(_username) public {
+  /**
+   * @dev Create new user contract.
+   * @param _dataId string Data id value.
+   * @param _username string Username of the user.
+   * @param _publicKey string Public key of the user.
+   */
+  function createUserContract(string _dataId, bytes32 _username, string _publicKey) isOnlyAdministrator(msg.sender) isNotAddedUser(_username) public {
+    accountRegistry[_username].owner = msg.sender;
+    administrators.push(administrator);
+    walletContract = new ProxyWallet(administrators);
+    walletContract.setNewUser(_dataId, _username, _publicKey);
+    accountRegistry[_username].resolver = address(walletContract);
   }
 
-  function removeUser() isOnlyAdministrator(msg.sender) public {
+  /**
+   * @dev Remove user contract.
+   * @param _username bytes32 Username.
+   */
+  function removeUserContract(bytes32 _username) isOnlyAdministrator(msg.sender) isAddedUser(_username) public {
+    delete accountRegistry[_username];
+    delete walletContract;
   }
 
-  function forwardENSsubnode() public {
+  /**
+   * @dev Forward ENS subnode.
+   */
+  function forwardENSsubnode() pure public {
   }
 
   /**

@@ -35,7 +35,7 @@ contract ProxyWallet {
 
   // User data structure.
   struct UserData {
-    string username;
+    bytes32 username;
     string userPublicKey;
   }
 
@@ -132,8 +132,8 @@ contract ProxyWallet {
    * @dev Requires that a valid username of the user was provided.
    * @param _username string Username of the user.
    */
-  modifier onlyValidUsername(string _username) {
-    require(bytes(_username).length > 0);
+  modifier onlyValidUsername(bytes32 _username) {
+    require(bytes32(_username).length > 0);
     _;
   }
 
@@ -151,7 +151,7 @@ contract ProxyWallet {
    * @param _dataId string Data id value.
    */
   modifier checkIfNotAddedUser(string _dataId) {
-    require(bytes(users[_dataId].username).length == 0);
+    require(bytes32(users[_dataId].username).length == 0);
     _;
   }
 
@@ -160,7 +160,7 @@ contract ProxyWallet {
    * @param _dataId string Data id value.
    */
   modifier checkIfAddedUser(string _dataId) {
-    require(bytes(users[_dataId].username).length > 0);
+    require(bytes32(users[_dataId].username).length > 0);
     _;
   }
 
@@ -210,7 +210,7 @@ contract ProxyWallet {
   /**
    * Fired when username is set.
    */
-  event UsernameSet(address indexed from, string username);
+  event UsernameSet(address indexed from, bytes32 username);
 
   /**
    * Fired when public key is set.
@@ -267,10 +267,10 @@ contract ProxyWallet {
   /**
    * @dev Set new user.
    * @param _dataId string Data id value.
-   * @param _username string Username of the user.
+   * @param _username bytes32 Username of the user.
    * @param _publicKey string Public key of the user.
    */
-  function setNewUser(string _dataId, string _username, string _publicKey) checkIfNotAddedUser(_dataId) calculateGasCost public {
+  function setNewUser(string _dataId, bytes32 _username, string _publicKey) checkIfNotAddedUser(_dataId) calculateGasCost public {
     setNewUsername(_dataId, _username);
     setNewUserPublicKey(_dataId, _publicKey);
   }
@@ -280,7 +280,7 @@ contract ProxyWallet {
    * @param _dataId string Data id value.
    * @param _username string Username of the user.
    */
-  function setNewUsername(string _dataId, string _username) onlyValidUsername(_username) calculateGasCost public {
+  function setNewUsername(string _dataId, bytes32 _username) onlyValidUsername(_username) calculateGasCost public {
     users[_dataId].username = _username;
     emit UsernameSet(msg.sender, _username);
   }
@@ -399,7 +399,7 @@ contract ProxyWallet {
    * @param _dataId string Data id value used as index to find data from list of users.
    * @return string User stored username.
    */
-  function getUsername(string _dataId) checkIfAddedUser(_dataId) calculateGasCost public returns (string) {
+  function getUsername(string _dataId) checkIfAddedUser(_dataId) calculateGasCost public returns (bytes32) {
     return users[_dataId].username;
   }
 
