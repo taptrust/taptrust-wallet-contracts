@@ -19,6 +19,9 @@ contract ENSRegistry is ENS {
   // Account registry mapping.
   mapping(bytes32 => AccountRecord) accountRegistry;
 
+  // Administrator address.
+  address public administrator;
+
   /**
    * @dev Permits modifications only by the owner of the specified node.
    * @param _node bytes32 Node param.
@@ -29,11 +32,38 @@ contract ENSRegistry is ENS {
   }
 
   /**
+   * @dev Checks if the administrator's address is valid or not.
+   * @param _administrator address Administrators address.
+   */
+  modifier onlyValidAdministrator(address _administrator) {
+    require(_administrator != address(0));
+    _;
+  }
+
+  /**
+   * @dev Checks if the administrator's address is valid or not.
+   * @param _username bytes32 Username.
+   */
+  modifier isNotAddedUser(bytes32 _username) {
+    require(bytes32(accountRegistry[_username].owner).length == 0);
+    _;
+  }
+
+  /**
+   * @dev Checks if the administrator's address is valid or not.
+   * @param _administrator address Administrators address.
+   */
+  modifier isOnlyAdministrator(address _administrator) {
+    require(_administrator == administrator);
+    _;
+  }
+
+  /**
    * @dev ENS Registry constructor.
    * @param _administrator address Administrator's address.
    */
-  constructor(address _administrator) public {
-    accountRegistry['admin'].owner = _administrator;
+  constructor(address _administrator) onlyValidAdministrator(_administrator) public {
+    administrator = _administrator;
   }
 
   /**
@@ -41,21 +71,18 @@ contract ENSRegistry is ENS {
    * @param _node bytes32 The node to transfer ownership of.
    * @param _owner address The address of the new owner.
    */
-  function setOwner(bytes32 _node, address _owner) public onlyOwner(_node) {
+  function setOwner(bytes32 _node, address _owner) onlyOwner(_node) public {
     emit Transfer(_node, _owner);
     accountRegistry[_node].owner = _owner;
   }
 
-  function createUser() public {
-    // @todo
+  function createUser(bytes32 _username) isOnlyAdministrator(msg.sender) isNotAddedUser(_username) public {
   }
 
-  function removeUser() public {
-    // @todo
+  function removeUser() isOnlyAdministrator(msg.sender) public {
   }
 
   function forwardENSsubnode() public {
-    // @todo
   }
 
   /**
@@ -64,7 +91,7 @@ contract ENSRegistry is ENS {
    * @param _label bytes32 The hash of the label specifying the subnode.
    * @param _owner address The address of the new owner.
    */
-  function setSubnodeOwner(bytes32 _node, bytes32 _label, address _owner) public onlyOwner(_node) {
+  function setSubnodeOwner(bytes32 _node, bytes32 _label, address _owner) onlyOwner(_node) public {
     bytes32 subnode = keccak256(abi.encodePacked(_node, _label));
     emit NewOwner(_node, _label, _owner);
     accountRegistry[subnode].owner = _owner;
@@ -75,7 +102,7 @@ contract ENSRegistry is ENS {
    * @param _node bytes32 The node to update.
    * @param _resolver address The address of the resolver.
    */
-  function setResolver(bytes32 _node, address _resolver) public onlyOwner(_node) {
+  function setResolver(bytes32 _node, address _resolver) onlyOwner(_node) public {
     emit NewResolver(_node, _resolver);
     accountRegistry[_node].resolver = _resolver;
   }
@@ -85,7 +112,7 @@ contract ENSRegistry is ENS {
    * @param _node bytes32 The node to update.
    * @param _ttl uint64 The TTL in seconds.
    */
-  function setTTL(bytes32 _node, uint64 _ttl) public onlyOwner(_node) {
+  function setTTL(bytes32 _node, uint64 _ttl) onlyOwner(_node) public {
     emit NewTTL(_node, _ttl);
     accountRegistry[_node].ttl = _ttl;
   }
