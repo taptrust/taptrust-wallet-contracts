@@ -266,7 +266,7 @@ contract ProxyWallet {
 
   /**
    * @dev Set new user.
-   * @param _dataId Data id value.
+   * @param _dataId string Data id value.
    * @param _username string Username of the user.
    * @param _publicKey string Public key of the user.
    */
@@ -277,7 +277,7 @@ contract ProxyWallet {
 
   /**
    * @dev Set username of the user/app.
-   * @param _dataId Data id value.
+   * @param _dataId string Data id value.
    * @param _username string Username of the user.
    */
   function setNewUsername(string _dataId, string _username) onlyValidUsername(_username) calculateGasCost public {
@@ -287,7 +287,7 @@ contract ProxyWallet {
 
   /**
    * @dev Set user/app public key.
-   * @param _dataId Data id value.
+   * @param _dataId string Data id value.
    * @param _publicKey string Public key of the user.
    */
   function setNewUserPublicKey(string _dataId, string _publicKey) onlyValidPublicKey(_publicKey) calculateGasCost public {
