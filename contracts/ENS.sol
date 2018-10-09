@@ -1,5 +1,10 @@
 pragma solidity ^0.4.24;
 
+/**
+ * @title ENS interface Smart Contract.
+ * @author Tap Trust
+ * @dev The ENS contract.
+ */
 interface ENS {
   // Logged when the owner of a node assigns a new owner to a subnode.
   event NewOwner(bytes32 indexed node, bytes32 indexed label, address owner);

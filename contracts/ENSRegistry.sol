@@ -2,6 +2,11 @@ pragma solidity ^0.4.24;
 
 import './ENS.sol';
 
+/**
+ * @title ENS Registry.
+ * @author Tap Trust
+ * @dev The ENS registry contract.
+ */
 contract ENSRegistry is ENS {
 
   // Account Record structure.
@@ -60,7 +65,7 @@ contract ENSRegistry is ENS {
    * @param _owner address The address of the new owner.
    */
   function setSubnodeOwner(bytes32 _node, bytes32 _label, address _owner) public onlyOwner(_node) {
-    bytes32 subnode = keccak256(_node, _label);
+    bytes32 subnode = keccak256(abi.encodePacked(_node, _label));
     emit NewOwner(_node, _label, _owner);
     accountRegistry[subnode].owner = _owner;
   }
