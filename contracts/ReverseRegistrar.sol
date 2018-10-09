@@ -3,6 +3,12 @@ pragma solidity ^0.4.24;
 import './ENSRegistry.sol';
 import './PublicResolver.sol';
 
+/**
+ * @title Reverse Registrar Smart Contract.
+ * @author Tap Trust
+ * @dev Implementation of a resolver for reverse records,
+ * which permits only the owner to update it.
+ */
 contract ReverseRegistrar {
 
   // namehash('addr.reverse')
