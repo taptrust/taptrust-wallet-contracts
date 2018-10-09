@@ -51,7 +51,7 @@ contract ENSRegistry is ENS {
    * @dev Checks if user is added.
    * @param _username bytes32 Username.
    */
-  modifier isNotAddedUser(bytes32 _username) {
+  modifier isAddedUser(bytes32 _username) {
     require(bytes32(accountRegistry[_username].owner).length > 0);
     _;
   }

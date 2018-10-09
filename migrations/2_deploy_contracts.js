@@ -28,6 +28,7 @@ module.exports = function (deployer, network, accounts) {
   deployer.deploy(ProxyWallet, administrators);
 
   const ENSadministrator = accounts[5];
+  deployer.link(ECRecovery, ENSRegistry);
   deployer.deploy(ENSRegistry, ENSadministrator).then(function () {
     return deployer.deploy(PublicResolver, ENSRegistry.address).then(function () {
       return deployer.deploy(ReverseRegistrar, ENSRegistry.address, PublicResolver.address);
