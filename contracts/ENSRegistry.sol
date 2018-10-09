@@ -41,15 +41,15 @@ contract ENSRegistry is ENS {
     accountRegistry[_node].owner = _owner;
   }
 
-  function createUser() {
+  function createUser() public {
     // @todo
   }
 
-  function removeUser() {
+  function removeUser() public {
     // @todo
   }
 
-  function forwardENSsubnode() {
+  function forwardENSsubnode() public {
     // @todo
   }
 
@@ -61,7 +61,7 @@ contract ENSRegistry is ENS {
    */
   function setSubnodeOwner(bytes32 _node, bytes32 _label, address _owner) public onlyOwner(_node) {
     bytes32 subnode = keccak256(_node, _label);
-    NewOwner(_node, _label, _owner);
+    emit NewOwner(_node, _label, _owner);
     accountRegistry[subnode].owner = _owner;
   }
 
