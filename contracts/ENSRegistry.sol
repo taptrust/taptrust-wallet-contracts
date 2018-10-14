@@ -14,8 +14,11 @@ contract ENSRegistry is ENS {
   struct AccountRecord {
     address owner;
     address resolver;
-    uint64 ttl;
+    uint256 ttl;
   }
+
+  // Transaction type.
+  enum TransactionType {OneTime, Session}
 
   // Account registry mapping.
   mapping(bytes32 => AccountRecord) accountRegistry;
@@ -117,8 +120,24 @@ contract ENSRegistry is ENS {
 
   /**
    * @dev Forward ENS subnode.
+   * @param _type TransactionType Type of the transaction.
+   * @param _node bytes32 The node to transfer ownership of.
+   * @param _from address The address from which to forward/transfer.
+   * @param _to address The address to forward/transfer to.
+   * @param _value uint256 The value to be transferred.
+   * @param _duration uint256 Session length value.
    */
-  function forwardENSsubnode() pure public {
+  function forwardENSsubnode(TransactionType _type, bytes32 _node, address _from, address _to, uint256 _value, /*string _dataId, address _deviceId, bytes32 _first, bytes32 _second, bytes32 _hashed, string _subject, bytes32 r, bytes32 s, uint8 v, uint256 _startTime,*/ uint256 _duration) onlyOwner(_node) public {
+    // Case 1. - When transaction is directly forwarded to the user contract for processing
+    if (_type == TransactionType.OneTime) {
+      walletContract.executeOneTimeTransaction(_from, _to, _value);
+    } else if (_type == TransactionType.Session) {
+      // Case 2. - When ENS Registry Contract is processing the transaction and then forwarding to user contract
+      setOwner(_node, _from);
+      setResolver(_node, _to);
+      setTTL(_node, _duration);
+      // walletContract.startSession(_dataId, _deviceId, _first, _second, _hashed, _subject, r, s, v, _startTime, _duration);
+    }
   }
 
   /**
@@ -146,9 +165,9 @@ contract ENSRegistry is ENS {
   /**
    * @dev Sets the TTL for the specified node.
    * @param _node bytes32 The node to update.
-   * @param _ttl uint64 The TTL in seconds.
+   * @param _ttl uint256 The TTL in seconds.
    */
-  function setTTL(bytes32 _node, uint64 _ttl) onlyOwner(_node) public {
+  function setTTL(bytes32 _node, uint256 _ttl) onlyOwner(_node) public {
     emit NewTTL(_node, _ttl);
     accountRegistry[_node].ttl = _ttl;
   }
@@ -174,9 +193,9 @@ contract ENSRegistry is ENS {
   /**
    * @dev Returns the TTL of a node, and any records associated with it.
    * @param _node bytes32 The specified node.
-   * @return uint64 The TTL of the node.
+   * @return uint256 The TTL of the node.
    */
-  function getTTL(bytes32 _node) public view returns (uint64) {
+  function getTTL(bytes32 _node) public view returns (uint256) {
     return accountRegistry[_node].ttl;
   }
 }
