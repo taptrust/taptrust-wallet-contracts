@@ -33,11 +33,11 @@ contract ProxyWallet {
   // Transaction type.
   enum TransactionType {OneTime, Session}
 
-  // User data structure.
-  struct UserData {
-    bytes32 username;
-    string userPublicKey;
-  }
+  // User name.
+  string public username;
+
+  // User public key.
+  string public userPublicKey;
 
   // Times data structure.
   struct Times {
@@ -60,9 +60,6 @@ contract ProxyWallet {
     TransactionType transactionType;
   }
 
-  // Users data mapping.
-  mapping(string => UserData) private users;
-
   // Session data mapping.
   mapping(string => Data) private sessionData;
 
@@ -73,16 +70,16 @@ contract ProxyWallet {
   mapping(address => bool) public isAdministrator;
 
   // Start gas value.
-  uint256 remainingGasStart;
+  uint256 public remainingGasStart;
 
   // Spent gas value.
-  uint256 remainingGasEnd;
+  uint256 public remainingGasEnd;
 
   // Used gas calculation.
-  uint256 usedGas;
+  uint256 public usedGas;
 
   // Total cost of gas for all methods.
-  uint256 gasCost;
+  uint256 public gasCost;
 
   /**
    * @dev Requires a valid owner of the contract.
@@ -132,8 +129,9 @@ contract ProxyWallet {
    * @dev Requires that a valid username of the user was provided.
    * @param _username string Username of the user.
    */
-  modifier onlyValidUsername(bytes32 _username) {
-    require(bytes32(_username).length > 0);
+  modifier onlyValidUsername(string _username) {
+    bytes memory tempValidUsername = bytes(_username);
+    require(tempValidUsername.length > 0);
     _;
   }
 
@@ -142,25 +140,26 @@ contract ProxyWallet {
    * @param _publicKey string Public key of the user.
    */
   modifier onlyValidPublicKey(string _publicKey) {
-    require(bytes(_publicKey).length > 0);
+    bytes memory tempValidPublicKey = bytes(_publicKey);
+    require(tempValidPublicKey.length > 0);
     _;
   }
 
   /**
-   * @dev Check if user is not already added to users mapping.
-   * @param _dataId string Data id value.
+   * @dev Check if user is not already added.
    */
-  modifier checkIfNotAddedUser(string _dataId) {
-    require(bytes32(users[_dataId].username).length == 0);
+  modifier checkIfNotAddedUser() {
+    bytes memory tempNotAddedUsername = bytes(username);
+    require(tempNotAddedUsername.length == 0);
     _;
   }
 
   /**
-   * @dev Check if user is already added to users mapping.
-   * @param _dataId string Data id value.
+   * @dev Check if user is already added.
    */
-  modifier checkIfAddedUser(string _dataId) {
-    require(bytes32(users[_dataId].username).length > 0);
+  modifier checkIfAddedUser() {
+    bytes memory tempAddedUsername = bytes(username);
+    require(tempAddedUsername.length > 0);
     _;
   }
 
@@ -210,7 +209,7 @@ contract ProxyWallet {
   /**
    * Fired when username is set.
    */
-  event UsernameSet(address indexed from, bytes32 username);
+  event UsernameSet(address indexed from, string username);
 
   /**
    * Fired when public key is set.
@@ -255,43 +254,34 @@ contract ProxyWallet {
   /**
    * @dev Proxy Wallet constructor.
    * @param _administrators address[] List of administrator addresses.
+   * @param _username string Username of the user.
+   * @param _publicKey string Public key of the user.
    */
-  constructor(address[] _administrators) onlyValidAdministrators(_administrators) public {
+  constructor(address[] _administrators, string _username, string _publicKey) onlyValidAdministrators(_administrators) checkIfNotAddedUser() public {
     owner = msg.sender;
     balances[owner] = address(msg.sender).balance;
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
     }
-  }
-
-  /**
-   * @dev Set new user.
-   * @param _dataId string Data id value.
-   * @param _username bytes32 Username of the user.
-   * @param _publicKey string Public key of the user.
-   */
-  function setNewUser(string _dataId, bytes32 _username, string _publicKey) checkIfNotAddedUser(_dataId) calculateGasCost public {
-    setNewUsername(_dataId, _username);
-    setNewUserPublicKey(_dataId, _publicKey);
+    setNewUsername(_username);
+    setNewUserPublicKey(_publicKey);
   }
 
   /**
    * @dev Set username of the user/app.
-   * @param _dataId string Data id value.
    * @param _username string Username of the user.
    */
-  function setNewUsername(string _dataId, bytes32 _username) onlyValidUsername(_username) calculateGasCost public {
-    users[_dataId].username = _username;
+  function setNewUsername(string _username) onlyValidUsername(_username) calculateGasCost public {
+    username = _username;
     emit UsernameSet(msg.sender, _username);
   }
 
   /**
    * @dev Set user/app public key.
-   * @param _dataId string Data id value.
    * @param _publicKey string Public key of the user.
    */
-  function setNewUserPublicKey(string _dataId, string _publicKey) onlyValidPublicKey(_publicKey) calculateGasCost public {
-    users[_dataId].userPublicKey = _publicKey;
+  function setNewUserPublicKey(string _publicKey) onlyValidPublicKey(_publicKey) calculateGasCost public {
+    userPublicKey = _publicKey;
     emit PublicKeySet(msg.sender, _publicKey);
   }
 
@@ -309,7 +299,7 @@ contract ProxyWallet {
    * @param _startTime uint256 Session start time value.
    * @param _duration uint256 Session length value.
    */
-  function startSession(string _dataId, address _deviceId, bytes32 _first, bytes32 _second, bytes32 _hashed, string _subject, bytes32 r, bytes32 s, uint8 v, uint256 _startTime, uint256 _duration) checkIfAddedUser(_dataId) isNotOneTimeTransaction(TransactionType.Session) calculateGasCost public {
+  function startSession(string _dataId, address _deviceId, bytes32 _first, bytes32 _second, bytes32 _hashed, string _subject, bytes32 r, bytes32 s, uint8 v, uint256 _startTime, uint256 _duration) checkIfAddedUser() isNotOneTimeTransaction(TransactionType.Session) calculateGasCost public {
     sessionData[_dataId] = Data(_deviceId, _first, _second, _subject, _hashed, r, s, v, Times(_startTime, _duration), SessionState.Active, TransactionType.Session);
     emit SessionEvent(_deviceId, _dataId, SessionState.Active);
   }
@@ -318,7 +308,7 @@ contract ProxyWallet {
    * @dev Close session.
    * @param _dataId string Data id value.
    */
-  function closeSession(string _dataId) checkIfAddedUser(_dataId) calculateGasCost public {
+  function closeSession(string _dataId) checkIfAddedUser() calculateGasCost public {
     require(sessionData[_dataId].deviceId != 0);
     if (checkSessionState(_dataId) == SessionState.Active) {
       address deviceId = sessionData[_dataId].deviceId;
@@ -387,20 +377,18 @@ contract ProxyWallet {
 
   /**
    * @dev Get user stored public key of given address.
-   * @param _dataId string Data id value used as index to find data from list of users.
    * @return string User stored public key.
    */
-  function getPublicKey(string _dataId) checkIfAddedUser(_dataId) calculateGasCost public returns (string) {
-    return users[_dataId].userPublicKey;
+  function getPublicKey() checkIfAddedUser() calculateGasCost public returns (string) {
+    return userPublicKey;
   }
 
   /**
    * @dev Get user stored username of given address.
-   * @param _dataId string Data id value used as index to find data from list of users.
    * @return string User stored username.
    */
-  function getUsername(string _dataId) checkIfAddedUser(_dataId) calculateGasCost public returns (bytes32) {
-    return users[_dataId].username;
+  function getUsername() checkIfAddedUser() calculateGasCost public returns (string) {
+    return username;
   }
 
   /**
@@ -408,7 +396,7 @@ contract ProxyWallet {
    * @param _dataId string Data id value used as index to find data from session.
    * @return bytes32, bytes32, uint8 Signature data.
    */
-  function getSignature(string _dataId) checkIfAddedUser(_dataId) calculateGasCost public returns (bytes32, bytes32, uint8)  {
+  function getSignature(string _dataId) checkIfAddedUser() calculateGasCost public returns (bytes32, bytes32, uint8)  {
     return (sessionData[_dataId].r, sessionData[_dataId].s, sessionData[_dataId].v);
   }
 
@@ -417,7 +405,7 @@ contract ProxyWallet {
    * @param _dataId string Data id value used as index to find data from session.
    * @return address, string, bytes32, uint256, uint256, SessionState, TransactionType Device id, subject, hashed data, start time, duration value, user data, session state and transaction type from session.
    */
-  function getOtherSessionData(string _dataId) checkIfAddedUser(_dataId) calculateGasCost public returns (address, string, bytes32, uint256, uint256, SessionState, TransactionType)  {
+  function getOtherSessionData(string _dataId) checkIfAddedUser() calculateGasCost public returns (address, string, bytes32, uint256, uint256, SessionState, TransactionType)  {
     return (sessionData[_dataId].deviceId, sessionData[_dataId].subject, sessionData[_dataId].hashedData, sessionData[_dataId].times.startTime, sessionData[_dataId].times.duration, sessionData[_dataId].state, sessionData[_dataId].transactionType);
   }
 

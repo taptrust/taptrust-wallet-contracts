@@ -16,6 +16,9 @@ module.exports = function (deployer, network, accounts) {
     accounts[4]
   ];
 
+  const username = 'testAccount';
+  const publicKey = '0x418d1b06928b801ac868a55505d750959927dde7ce2251f02864cec0235ca0f6';
+
   deployer.deploy(ConvertLib);
   deployer.link(ConvertLib, MetaCoin);
   deployer.deploy(MetaCoin);
@@ -25,7 +28,7 @@ module.exports = function (deployer, network, accounts) {
   deployer.link(ECRecovery, ProxyWallet);
   deployer.link(SafeMath, ProxyWallet);
 
-  deployer.deploy(ProxyWallet, administrators);
+  deployer.deploy(ProxyWallet, administrators, username, publicKey);
 
   const ENSadministrator = accounts[5];
   deployer.link(ECRecovery, ENSRegistry);
