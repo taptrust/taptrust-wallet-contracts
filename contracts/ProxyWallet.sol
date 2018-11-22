@@ -24,8 +24,8 @@ contract ProxyWallet {
   // Owner of the contract.
   address public owner;
 
-  // Account balances mapping.
-  mapping(address => uint256) balances;
+  // Account balance.
+  uint256 balance;
 
   // Session state.
   enum SessionState {Active, Closed}
@@ -165,10 +165,9 @@ contract ProxyWallet {
 
   /**
    * @dev Checks if account has funds.
-   * @param _address address Address of the account which balance needs to be checked.
    */
-  modifier hasFunds(address _address) {
-    require(balances[_address] > 0);
+  modifier hasFunds() {
+    require(balance > 0);
     _;
   }
 
@@ -259,7 +258,7 @@ contract ProxyWallet {
    */
   constructor(address[] _administrators, string _username, string _publicKey) onlyValidAdministrators(_administrators) checkIfNotAddedUser() public {
     owner = msg.sender;
-    balances[owner] = address(msg.sender).balance;
+    balance = address(msg.sender).balance;
     for (uint256 i = 0; i < _administrators.length; i++) {
       addAdministrator(_administrators[i]);
     }
@@ -335,7 +334,6 @@ contract ProxyWallet {
   function addAdministrator(address _admin) isOwner calculateGasCost public {
     require(!isAdministrator[_admin]);
     administrators.push(_admin);
-    balances[_admin] = address(_admin).balance;
     isAdministrator[_admin] = true;
     emit AdministratorAdded(_admin);
   }
@@ -457,7 +455,7 @@ contract ProxyWallet {
    * @return uint256 Balance of the account.
    */
   function getBalance(address _address) calculateGasCost public returns (uint256) {
-    return balances[_address];
+    return address(_address).balance;
   }
 
   /**
@@ -472,29 +470,26 @@ contract ProxyWallet {
 
   /**
    * @dev Check if its one time transaction and execute transfer.
-   * @param _from address The address from which to transfer.
    * @param _to address The address to transfer to.
    * @param _value uint256 The amount to be transferred.
    * @return bool True if the function was executed successfully.
    */
-  function executeOneTimeTransaction(address _from, address _to, uint256 _value) isOneTimeTransaction(TransactionType.OneTime) public returns (bool) {
-    transfer(_from, _to, _value);
+  function executeOneTimeTransaction(address _to, uint256 _value) isOneTimeTransaction(TransactionType.OneTime) public returns (bool) {
+    transfer(_to, _value);
   }
 
   /**
    * @dev Transfer funds for a specified address.
-   * @param _from address The address from which to transfer.
    * @param _to address The address to transfer to.
    * @param _value uint256 The amount to be transferred.
    * @return bool True if the function was executed successfully.
    */
-  function transfer(address _from, address _to, uint256 _value) calculateGasCost public returns (bool) {
-    require(_from != address(0));
+  function transfer(address _to, uint256 _value) calculateGasCost public payable returns (bool) {
+    require(owner != address(0));
     require(_to != address(0));
-    require(_value <= balances[_from]);
-    balances[_from] = balances[_from].sub(_value);
-    balances[_to] = balances[_to].add(_value);
-    emit Transfer(_from, _to, _value);
+    require(_value <= getBalance(owner));
+    _to.transfer(_value);
+    emit Transfer(owner, _to, _value);
     return true;
   }
 
@@ -504,7 +499,7 @@ contract ProxyWallet {
    * @return bool True if the function was executed successfully.
    */
   function refundGasCosts(address _admin) isAuthorizedAdmin(_admin) public returns (bool) {
-    transfer(owner, _admin, gasCost);
+    transfer(_admin, gasCost);
     emit GasRefundEvent(owner, _admin, gasCost);
   }
 

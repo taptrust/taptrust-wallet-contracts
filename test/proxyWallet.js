@@ -273,7 +273,7 @@ contract('ProxyWallet Smart Contract', function (accounts) {
       return ProxyWalletInstance.getBalance.call(accountTwo);
     }).then(function (balance) {
       accountTwoStartingBalance = balance;
-      return ProxyWalletInstance.transfer(accountOne, accountTwo, amount, {from: accountOne});
+      return ProxyWalletInstance.transfer(accountTwo, amount);
     }).then(function () {
       return ProxyWalletInstance.getBalance.call(accountOne);
     }).then(function (balance) {
