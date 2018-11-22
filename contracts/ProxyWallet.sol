@@ -48,8 +48,8 @@ contract ProxyWallet {
   // Session data structure.
   struct Data {
     address deviceId;
-    bytes32 keyOne;
-    bytes32 keyTwo;
+    string keyOne;
+    string keyTwo;
     string subject;
     bytes32 hashedData;
     bytes32 r;
@@ -289,8 +289,8 @@ contract ProxyWallet {
    * @dev Add session data and start session.
    * @param _dataId string Data id value.
    * @param _deviceId string Device id value.
-   * @param _first bytes32 First key.
-   * @param _second bytes32 Second key.
+   * @param _first string First key.
+   * @param _second string Second key.
    * @param _hashed bytes32 Hashed value.
    * @param _subject string Description/subject value.
    * @param r bytes32 Signature r param.
@@ -299,7 +299,7 @@ contract ProxyWallet {
    * @param _startTime uint256 Session start time value.
    * @param _duration uint256 Session length value.
    */
-  function startSession(string _dataId, address _deviceId, bytes32 _first, bytes32 _second, bytes32 _hashed, string _subject, bytes32 r, bytes32 s, uint8 v, uint256 _startTime, uint256 _duration) checkIfAddedUser() isNotOneTimeTransaction(TransactionType.Session) calculateGasCost public {
+  function startSession(string _dataId, address _deviceId, string _first, string _second, bytes32 _hashed, string _subject, bytes32 r, bytes32 s, uint8 v, uint256 _startTime, uint256 _duration) checkIfAddedUser isNotOneTimeTransaction(TransactionType.Session) calculateGasCost public {
     sessionData[_dataId] = Data(_deviceId, _first, _second, _subject, _hashed, r, s, v, Times(_startTime, _duration), SessionState.Active, TransactionType.Session);
     emit SessionEvent(_deviceId, _dataId, SessionState.Active);
   }
@@ -308,7 +308,7 @@ contract ProxyWallet {
    * @dev Close session.
    * @param _dataId string Data id value.
    */
-  function closeSession(string _dataId) checkIfAddedUser() calculateGasCost public {
+  function closeSession(string _dataId) checkIfAddedUser calculateGasCost public {
     require(sessionData[_dataId].deviceId != 0);
     if (checkSessionState(_dataId) == SessionState.Active) {
       address deviceId = sessionData[_dataId].deviceId;
@@ -369,9 +369,9 @@ contract ProxyWallet {
   /**
    * @dev Get public key value from session data.
    * @param _dataId string Data id value used as index to find data from session.
-   * @return bytes32, bytes32 First and second key from session data.
+   * @return string, string First and second key from session data.
    */
-  function getPublicKeyFromSession(string _dataId) calculateGasCost public returns (bytes32, bytes32) {
+  function getPublicKeyFromSession(string _dataId) calculateGasCost public returns (string, string) {
     return (sessionData[_dataId].keyOne, sessionData[_dataId].keyTwo);
   }
 
@@ -379,7 +379,7 @@ contract ProxyWallet {
    * @dev Get user stored public key of given address.
    * @return string User stored public key.
    */
-  function getPublicKey() checkIfAddedUser() calculateGasCost public returns (string) {
+  function getPublicKey() checkIfAddedUser calculateGasCost public returns (string) {
     return userPublicKey;
   }
 
@@ -387,7 +387,7 @@ contract ProxyWallet {
    * @dev Get user stored username of given address.
    * @return string User stored username.
    */
-  function getUsername() checkIfAddedUser() calculateGasCost public returns (string) {
+  function getUsername() checkIfAddedUser calculateGasCost public returns (string) {
     return username;
   }
 
@@ -396,7 +396,7 @@ contract ProxyWallet {
    * @param _dataId string Data id value used as index to find data from session.
    * @return bytes32, bytes32, uint8 Signature data.
    */
-  function getSignature(string _dataId) checkIfAddedUser() calculateGasCost public returns (bytes32, bytes32, uint8)  {
+  function getSignature(string _dataId) checkIfAddedUser calculateGasCost public returns (bytes32, bytes32, uint8)  {
     return (sessionData[_dataId].r, sessionData[_dataId].s, sessionData[_dataId].v);
   }
 
@@ -405,7 +405,7 @@ contract ProxyWallet {
    * @param _dataId string Data id value used as index to find data from session.
    * @return address, string, bytes32, uint256, uint256, SessionState, TransactionType Device id, subject, hashed data, start time, duration value, user data, session state and transaction type from session.
    */
-  function getOtherSessionData(string _dataId) checkIfAddedUser() calculateGasCost public returns (address, string, bytes32, uint256, uint256, SessionState, TransactionType)  {
+  function getOtherSessionData(string _dataId) checkIfAddedUser calculateGasCost public returns (address, string, bytes32, uint256, uint256, SessionState, TransactionType)  {
     return (sessionData[_dataId].deviceId, sessionData[_dataId].subject, sessionData[_dataId].hashedData, sessionData[_dataId].times.startTime, sessionData[_dataId].times.duration, sessionData[_dataId].state, sessionData[_dataId].transactionType);
   }
 

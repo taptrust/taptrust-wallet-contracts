@@ -1,7 +1,7 @@
 let ProxyWallet = artifacts.require('ProxyWallet');
 let utils = require('ethereumjs-util');
 let Web3 = require('web3');
-let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:7545'));
+let web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 let node = web3.version.node;
 console.log('Using node =>' + node);
 
@@ -194,40 +194,38 @@ contract('ProxyWallet Smart Contract', function (accounts) {
   });
 
   it('Check total gas costs at the start', function () {
+    let initialGas = 0;
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
-      return ProxyWalletInstance.gasCost;
+      return ProxyWalletInstance.getCurrentSpentGas();
     }).then((gasCost) => {
-      assert.equal(gasCost, undefined);
+      assert.notEqual(gasCost, initialGas);
     })
   });
 
   it('Set new username and userPublicKey', function () {
-    let id = '0xbe0942d848991C0b915CA6520c5F064dcF917c22';
     let username = 'test';
     let userPublicKey = '5fe8b9751389e884ccf697eb78afb47979fff9c32a541e31bb599c782d7c770e';
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
-      return ProxyWalletInstance.setNewUser(id, username, userPublicKey);
-    }).then(() => {
-      return ProxyWalletInstance.setNewUsername(id, username);
+      return ProxyWalletInstance.setNewUsername(username);
     }).then((receipt) => {
       assert.equal(receipt.logs[0].args.username, username, 'correct username added.');
-      return ProxyWalletInstance.setNewUserPublicKey(id, userPublicKey);
+      return ProxyWalletInstance.setNewUserPublicKey(userPublicKey);
     }).then((receipt) => {
       assert.equal(receipt.logs[0].args.publicKey, userPublicKey, 'correct userPublicKey added.');
     })
   });
 
   it('Start new session and add test session data', function () {
-    let dataId = '0xbe0942d848991C0b915CA6520c5F064dcF917c22';
-    let deviceId = 0x659541FECCE1B053000657BBF08aB6E67406F711;
+    let dataId = '2134123';
+    let deviceId = '0xCC5C30215ab33C9faF23c21FA0751B19B912FDF5';
     let first = '0x0';
     let second = '0x0';
-    let hashed = '0x0';
+    let hashed = '0x746573740000000000000000000000';
     let subject = '0x0';
-    let r = '0x0';
-    let s = '0x0';
+    let r = '0x746573740000000000000000000000';
+    let s = '0x746573740000000000000000000000';
     let v = 0;
     let startTime = 0;
     let duration = 0;
@@ -246,8 +244,8 @@ contract('ProxyWallet Smart Contract', function (accounts) {
   });
 
   it('Close the session and delete test data', function () {
-    let dataId = '0xbe0942d848991C0b915CA6520c5F064dcF917c22';
-    let deviceId = 0x659541FECCE1B053000657BBF08aB6E67406F711;
+    let dataId = '2134123';
+    let deviceId = '0xCC5C30215ab33C9faF23c21FA0751B19B912FDF5';
     let sessionState = 1;
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
@@ -266,25 +264,29 @@ contract('ProxyWallet Smart Contract', function (accounts) {
     let accountTwoStartingBalance;
     let accountOneEndingBalance;
     let accountTwoEndingBalance;
-    let amount = 100000000000;
+    let amount = 10000000000000000000;
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
       return ProxyWalletInstance.getBalance.call(accountOne);
     }).then(function (balance) {
-      accountOneStartingBalance = balance.toNumber();
+      accountOneStartingBalance = balance;
       return ProxyWalletInstance.getBalance.call(accountTwo);
     }).then(function (balance) {
-      accountTwoStartingBalance = balance.toNumber();
+      accountTwoStartingBalance = balance;
       return ProxyWalletInstance.transfer(accountOne, accountTwo, amount, {from: accountOne});
     }).then(function () {
       return ProxyWalletInstance.getBalance.call(accountOne);
     }).then(function (balance) {
-      accountOneEndingBalance = balance.toNumber();
+      accountOneEndingBalance = balance;
       return ProxyWalletInstance.getBalance.call(accountTwo);
     }).then(function (balance) {
-      accountTwoEndingBalance = balance.toNumber();
-      assert.isBelow(accountOneEndingBalance, accountOneStartingBalance, 'Amount wasn\'t correctly taken from the sender');
-      assert.isAbove(accountTwoEndingBalance, accountTwoStartingBalance, 'Amount wasn\'t correctly sent to the receiver');
+      accountTwoEndingBalance = balance;
+      let accountOneStartAmount = parseFloat(web3.utils.fromWei(accountOneStartingBalance, 'ether'));
+      let accountOneEndAmount = parseFloat(web3.utils.fromWei(accountOneEndingBalance, 'ether'));
+      let accountTwoStartAmount = parseFloat(web3.utils.fromWei(accountTwoStartingBalance, 'ether'));
+      let accountTwoEndAmount = parseFloat(web3.utils.fromWei(accountTwoEndingBalance, 'ether'));
+      assert.isBelow(accountOneEndAmount, accountOneStartAmount, 'Amount wasn\'t correctly taken from the sender');
+      assert.isAbove(accountTwoEndAmount, accountTwoStartAmount, 'Amount wasn\'t correctly sent to the receiver');
     });
   });
 
@@ -308,7 +310,7 @@ contract('ProxyWallet Smart Contract', function (accounts) {
   it('Recover the address and check signature', function () {
     let address = accounts[0];
     console.log('Owner=' + address);
-    const message = 'Lorem ipsum mark mark dolor sit';
+    const message = '0x4c6f72656d20697073756d00000000';
     return ProxyWallet.deployed().then(async function (instance) {
       ProxyWalletInstance = instance;
       console.log('sig =>', address);
@@ -324,18 +326,17 @@ contract('ProxyWallet Smart Contract', function (accounts) {
   });
 
   it('Refund all gas costs', function () {
-    let id = '0xe1c3972879c4D5fE2340c8DA8DFa927DcEBFa956';
     let username = 'test user';
     return ProxyWallet.deployed().then(function (instance) {
       ProxyWalletInstance = instance;
-      return ProxyWalletInstance.setNewUsername(id, username);
+      return ProxyWalletInstance.setNewUsername(username);
     }).then(() => {
       return ProxyWalletInstance.gasCost;
     }).then(() => {
       let admin = accounts[1];
       return ProxyWalletInstance.refundGasCosts(admin);
     }).then((data) => {
-      assert.notEqual(data.logs[1].args.gasCost.toNumber(), undefined);
+      assert.notEqual(data.logs[1].args.gasCost, undefined);
     })
   });
 
