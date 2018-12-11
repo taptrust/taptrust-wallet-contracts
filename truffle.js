@@ -1,7 +1,7 @@
 let HDWalletProvider = require('truffle-hdwallet-provider');
-let infura_apikey = '04b7e53ea51a4c85972207c27f35f3f0';
+let infura_apikey = '155f5547dd0e4ab09bded202e8bcc08a';
 // Either use this key or get yours at https://infura.io/signup. It's free.
-let mnemonic = 'champion ski expand average siren innocent law rent choose fatigue session pig';
+let privateKey = process.env.TAPTRUST_PRIVATEKEY;
 
 module.exports = {
   // See <http://truffleframework.com/docs/advanced/configuration>
@@ -34,7 +34,7 @@ module.exports = {
       test: true
     },
     ropsten: {
-      provider: new HDWalletProvider(mnemonic, 'https://ropsten.infura.io/v3/' + infura_apikey),
+      provider: new HDWalletProvider(privateKey, 'https://ropsten.infura.io/v3/' + infura_apikey),
       network_id: 3,
       gas: 4500000
     },
