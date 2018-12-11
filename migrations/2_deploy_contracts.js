@@ -1,40 +1,16 @@
-let ConvertLib = artifacts.require('ConvertLib');
-let MetaCoin = artifacts.require('MetaCoin');
 let ECRecovery = artifacts.require('ECRecovery');
 let SafeMath = artifacts.require('SafeMath');
 let ProxyWallet = artifacts.require('ProxyWallet');
-let ENSRegistry = artifacts.require('ENSRegistry');
-let PublicResolver = artifacts.require('PublicResolver');
-let ReverseRegistrar = artifacts.require('ReverseRegistrar');
+let WalletFactory = artifacts.require('WalletFactory');
 
 module.exports = function (deployer, network, accounts) {
-  const administrators = [
-    accounts[0],
-    accounts[1],
-    accounts[2],
-    accounts[3],
-    accounts[4]
-  ];
-
-  const username = 'testAccount';
-  const publicKey = '0x418d1b06928b801ac868a55505d750959927dde7ce2251f02864cec0235ca0f6';
-
-  deployer.deploy(ConvertLib);
-  deployer.link(ConvertLib, MetaCoin);
-  deployer.deploy(MetaCoin);
-
   deployer.deploy(ECRecovery);
   deployer.deploy(SafeMath);
   deployer.link(ECRecovery, ProxyWallet);
   deployer.link(SafeMath, ProxyWallet);
-
-  deployer.deploy(ProxyWallet, administrators, username, publicKey);
-
-  const ENSadministrator = accounts[5];
-  deployer.link(ECRecovery, ENSRegistry);
-  deployer.deploy(ENSRegistry, ENSadministrator).then(function () {
-    return deployer.deploy(PublicResolver, ENSRegistry.address).then(function () {
-      return deployer.deploy(ReverseRegistrar, ENSRegistry.address, PublicResolver.address);
-    });
-  });
+  deployer.link(ECRecovery, WalletFactory);
+  deployer.link(SafeMath, WalletFactory);
+  
+  deployer.deploy(WalletFactory);
+  deployer.deploy(ProxyWallet, '0xc2f8e179bffa12aa0036c3fc926c060cbb3205a6ef43e7cdec3f819960d788f232b8c99008a32e52c90eea1fcd5782b40684ad4421d4772750f223ae142806ff');
 };
