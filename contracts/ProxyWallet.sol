@@ -31,6 +31,8 @@ contract ProxyWallet {
 		nextNonce = 1;
 	}
 	
+	function() public payable { }
+	
 	modifier requireSignedMessage(bytes message, bytes signature, uint256 nonce, uint gasPrice, uint gasLimit) {
 	    uint gas = gasleft();
 	    require(address(this).balance >= gasPrice.mul(gasLimit));
