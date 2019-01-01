@@ -1,0 +1,11 @@
+{
+  "zosversion": "2",
+  "name": "taptrust-wallet-contracts",
+  "version": "0.1.0",
+  "contracts": {
+    "ProxyWallet": "ProxyWallet",
+    "WalletFactory": "WalletFactory",
+    "VouchersUser": "VouchersUser",
+    "VouchersRegistry": "VouchersRegistry"
+  }
+}

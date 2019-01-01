@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
 import './ECRecovery.sol';
-import './SafeMath.sol';
+import './trustfund-vouchers/contracts/VouchersUser.sol';
 
 /**
  * @title Proxy Wallet Smart Contract.
@@ -12,7 +12,7 @@ import './SafeMath.sol';
  * but it includes a signed message that can be authenticated
  * as being from either the account owner.
  */
-contract ProxyWallet {
+contract ProxyWallet is VouchersUser {
 
 	// Using SafeMath library for math expressions.
 	using SafeMath for uint256;
@@ -24,11 +24,12 @@ contract ProxyWallet {
 
 	uint public nextNonce;
 	mapping(bytes32 => bool) public usedMessageHashes;
-
-	constructor(bytes publicKey) public {
+	
+	function initialize(bytes publicKey, VouchersRegistry registry) initializer public {
 		require(publicKey.length == 64);
 		userPublicKey = publicKey;
 		nextNonce = 1;
+		initialize(registry, address(keccak256(publicKey)));
 	}
 	
 	function() public payable { }
@@ -61,7 +62,7 @@ contract ProxyWallet {
 	
 	function refundGas(uint gas, uint gasPrice) private {
 	    gas -= gasleft();
-	    gas += 21000;
+	    gas += 37856;
 		msg.sender.transfer(gas.mul(gasPrice));
 	}
 	
