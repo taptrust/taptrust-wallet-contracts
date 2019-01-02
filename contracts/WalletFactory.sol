@@ -20,7 +20,7 @@ contract WalletFactory is Initializable {
 	}
 
 	function createNewWallet(bytes publicKey) public {
-		ProxyWallet wallet = ProxyWallet(_app.create("openzeppelin-eth", "ProxyWallet", abi.encodeWithSignature("initialize(bytes,address)", publicKey, _registry)));
+		ProxyWallet wallet = ProxyWallet(_app.create("taptrust-wallet-contracts", "ProxyWallet", abi.encodeWithSignature("initialize(bytes,address)", publicKey, _registry)));
 		emit WalletCreated(address(wallet));
 	}
 }
