@@ -1,16 +1,23 @@
-let ECRecovery = artifacts.require('ECRecovery');
-let SafeMath = artifacts.require('SafeMath');
-let ProxyWallet = artifacts.require('ProxyWallet');
-let WalletFactory = artifacts.require('WalletFactory');
+// Required by zos-lib when running from truffle
+global.artifacts = artifacts;
+global.web3 = web3;
+
+const { Contracts, SimpleProject  } = require('zos-lib')
+
+const VouchersRegistry = Contracts.getFromLocal('VouchersRegistry');
+const WalletFactory = Contracts.getFromLocal('WalletFactory');
+
+const _appAdmin = web3.eth.accounts[1];
+const _upgradeAdmin = web3.eth.accounts[0];
 
 module.exports = function (deployer, network, accounts) {
-  deployer.deploy(ECRecovery);
-  deployer.deploy(SafeMath);
-  deployer.link(ECRecovery, ProxyWallet);
-  deployer.link(SafeMath, ProxyWallet);
-  deployer.link(ECRecovery, WalletFactory);
-  deployer.link(SafeMath, WalletFactory);
+  const project = new SimpleProject('taptrust-wallet-contracts', { from: _upgradeAdmin });
   
-  deployer.deploy(WalletFactory);
-  deployer.deploy(ProxyWallet, '0xc2f8e179bffa12aa0036c3fc926c060cbb3205a6ef43e7cdec3f819960d788f232b8c99008a32e52c90eea1fcd5782b40684ad4421d4772750f223ae142806ff');
+  console.log('Creating an upgradeable instance of V0...');
+  const proxy = await project.createProxy(VouchersRegistry, { initArgs: [_appAdmin] });
+  
+  console.log('Contract\'s storage value: ' + (await proxy.value()).toString() + '\n');
+  console.log('Upgrading to v1...');
+  await project.upgradeProxy(proxy, MyContractV1, { initMethod: 'add', initArgs: [1], initFrom: initializerAddress })
+  console.log('Contract\'s storage new value: ' + (await instance.value()).toString() + '\n');
 };

@@ -4,3 +4,7 @@
 build/
 node_modules/
 package-lock.json
+
+.zos.session
+
+zos.dev-4447.json

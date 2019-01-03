@@ -29,13 +29,16 @@
     "@angular/platform-browser-dynamic": "^5.2.11",
     "@angular/platform-server": "^5.2.11",
     "@angular/router": "^5.2.11",
+    "bip39": "^2.5.0",
     "core-js": "^2.5.7",
     "ethereumjs-util": "^5.2.0",
     "openzeppelin-solidity": "1.12.0",
     "rxjs": "^5.5.12",
+    "truffle-core": "^5.0.0",
     "truffle-hdwallet-provider": "^1.0.0-web3one.2",
     "web3": "1.0.0-beta.35",
-    "zone.js": "^0.8.23"
+    "zone.js": "^0.8.23",
+    "zos-lib": "^2.0.2"
   },
   "devDependencies": {
     "@angular-devkit/core": "^0.4.9",
