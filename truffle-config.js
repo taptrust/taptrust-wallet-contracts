@@ -50,5 +50,10 @@ module.exports = {
       //          - function that returns a web3 provider instance (see below.)
       //          - if specified, host and port are ignored.
     }
-  }
+  },
+ compilers: {
+        solc: {
+            version: "0.4.24"
+        }
+    }
 };
