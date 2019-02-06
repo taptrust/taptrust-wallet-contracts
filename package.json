@@ -33,8 +33,10 @@
     "ethereumjs-util": "^5.2.0",
     "openzeppelin-solidity": "1.12.0",
     "rxjs": "^5.5.12",
-    "truffle-hdwallet-provider": "^1.0.0-web3one.2",
+    "solc": "^0.4.24",
+    "truffle-core": "^5.0.2",
     "web3": "1.0.0-beta.35",
+    "web3c": "^1.0.3",
     "zone.js": "^0.8.23"
   },
   "devDependencies": {
@@ -56,11 +58,13 @@
     "karma-coverage-istanbul-reporter": "^1.4.3",
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "oasis-compile": "^1.0.2",
     "protractor": "^5.4.1",
     "protractor-console-plugin": "^0.1.1",
     "solidity-coverage": "^0.5.4",
     "solidity-docgen": "^0.1.0",
     "truffle-contract": "^3.0.6",
+    "truffle-hdwallet-provider": "^1.0.0-web3one.0",
     "ts-node": "^3.3.0",
     "tslint": "^5.11.0",
     "typescript": "~2.4.2"

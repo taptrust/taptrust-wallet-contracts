@@ -1,0 +1,675 @@
+{
+  "sourcePath": "/Users/jamesl/Google Drive/oasis/taptrust-wallet-contracts/contracts/WalletFactory.sol",
+  "source": "pragma solidity ^0.4.24;\n\nimport './ProxyWallet.sol';\n\ncontract WalletFactory {\n\t\n\tevent WalletCreated(address indexed wallet);\n\n\tfunction createNewWallet(bytes publicKey) public {\n\t\temit WalletCreated(address(new ProxyWallet(publicKey)));\n\t}\n}",
+  "sourceMap": "55:189:6:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;55:189:6;;;;;;;",
+  "deployedSourceMap": "55:189:6:-;;;;;;;;;;;;;;;;;;;;;;;;130:112;;8:9:-1;5:2;;;30:1;27;20:12;5:2;130:112:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;226:9;210:26;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;99:1;94:3;90:11;84:18;80:1;75:3;71:11;64:39;52:2;49:1;45:10;40:15;;8:100;;;12:14;210:26:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;210:26:6;188:50;;;;;;;;;;;;130:112;:::o;55:189::-;;;;;;;;;;:::o",
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/Users/jamesl/Google Drive/oasis/taptrust-wallet-contracts/contracts/WalletFactory.sol",
+      "exportedSymbols": {
+        "WalletFactory": [
+          664
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.4",
+            ".24"
+          ]
+        },
+        "id": 643,
+        "name": "PragmaDirective",
+        "src": "0:24:6"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 548,
+          "absolutePath": "/Users/jamesl/Google Drive/oasis/taptrust-wallet-contracts/contracts/ProxyWallet.sol",
+          "file": "./ProxyWallet.sol",
+          "scope": 665,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 644,
+        "name": "ImportDirective",
+        "src": "26:27:6"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            547
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            664
+          ],
+          "name": "WalletFactory",
+          "scope": 665
+        },
+        "children": [
+          {
+            "attributes": {
+              "anonymous": false,
+              "documentation": null,
+              "name": "WalletCreated"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "indexed": true,
+                      "name": "wallet",
+                      "scope": 648,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "type": "address"
+                        },
+                        "id": 645,
+                        "name": "ElementaryTypeName",
+                        "src": "103:7:6"
+                      }
+                    ],
+                    "id": 646,
+                    "name": "VariableDeclaration",
+                    "src": "103:22:6"
+                  }
+                ],
+                "id": 647,
+                "name": "ParameterList",
+                "src": "102:24:6"
+              }
+            ],
+            "id": 648,
+            "name": "EventDefinition",
+            "src": "83:44:6"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "createNewWallet",
+              "payable": false,
+              "scope": 664,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "publicKey",
+                      "scope": 663,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bytes",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bytes",
+                          "type": "bytes"
+                        },
+                        "id": 649,
+                        "name": "ElementaryTypeName",
+                        "src": "155:5:6"
+                      }
+                    ],
+                    "id": 650,
+                    "name": "VariableDeclaration",
+                    "src": "155:15:6"
+                  }
+                ],
+                "id": 651,
+                "name": "ParameterList",
+                "src": "154:17:6"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 652,
+                "name": "ParameterList",
+                "src": "179:0:6"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "isStructConstructorCall": false,
+                          "lValueRequested": false,
+                          "names": [
+                            null
+                          ],
+                          "type": "tuple()",
+                          "type_conversion": false
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_address",
+                                  "typeString": "address"
+                                }
+                              ],
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 648,
+                              "type": "function (address)",
+                              "value": "WalletCreated"
+                            },
+                            "id": 653,
+                            "name": "Identifier",
+                            "src": "188:13:6"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "isStructConstructorCall": false,
+                              "lValueRequested": false,
+                              "names": [
+                                null
+                              ],
+                              "type": "address",
+                              "type_conversion": true
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": [
+                                    {
+                                      "typeIdentifier": "t_contract$_ProxyWallet_$547",
+                                      "typeString": "contract ProxyWallet"
+                                    }
+                                  ],
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": true,
+                                  "lValueRequested": false,
+                                  "type": "type(address)",
+                                  "value": "address"
+                                },
+                                "id": 654,
+                                "name": "ElementaryTypeNameExpression",
+                                "src": "202:7:6"
+                              },
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": false,
+                                  "isStructConstructorCall": false,
+                                  "lValueRequested": false,
+                                  "names": [
+                                    null
+                                  ],
+                                  "type": "contract ProxyWallet",
+                                  "type_conversion": false
+                                },
+                                "children": [
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": [
+                                        {
+                                          "typeIdentifier": "t_bytes_memory_ptr",
+                                          "typeString": "bytes memory"
+                                        }
+                                      ],
+                                      "isConstant": false,
+                                      "isLValue": false,
+                                      "isPure": false,
+                                      "lValueRequested": false,
+                                      "type": "function (bytes memory) returns (contract ProxyWallet)"
+                                    },
+                                    "children": [
+                                      {
+                                        "attributes": {
+                                          "contractScope": null,
+                                          "name": "ProxyWallet",
+                                          "referencedDeclaration": 547,
+                                          "type": "contract ProxyWallet"
+                                        },
+                                        "id": 655,
+                                        "name": "UserDefinedTypeName",
+                                        "src": "214:11:6"
+                                      }
+                                    ],
+                                    "id": 656,
+                                    "name": "NewExpression",
+                                    "src": "210:15:6"
+                                  },
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [
+                                        null
+                                      ],
+                                      "referencedDeclaration": 650,
+                                      "type": "bytes memory",
+                                      "value": "publicKey"
+                                    },
+                                    "id": 657,
+                                    "name": "Identifier",
+                                    "src": "226:9:6"
+                                  }
+                                ],
+                                "id": 658,
+                                "name": "FunctionCall",
+                                "src": "210:26:6"
+                              }
+                            ],
+                            "id": 659,
+                            "name": "FunctionCall",
+                            "src": "202:35:6"
+                          }
+                        ],
+                        "id": 660,
+                        "name": "FunctionCall",
+                        "src": "188:50:6"
+                      }
+                    ],
+                    "id": 661,
+                    "name": "EmitStatement",
+                    "src": "183:55:6"
+                  }
+                ],
+                "id": 662,
+                "name": "Block",
+                "src": "179:63:6"
+              }
+            ],
+            "id": 663,
+            "name": "FunctionDefinition",
+            "src": "130:112:6"
+          }
+        ],
+        "id": 664,
+        "name": "ContractDefinition",
+        "src": "55:189:6"
+      }
+    ],
+    "id": 665,
+    "name": "SourceUnit",
+    "src": "0:244:6"
+  },
+  "ast": {
+    "absolutePath": "/Users/jamesl/Google Drive/oasis/taptrust-wallet-contracts/contracts/WalletFactory.sol",
+    "exportedSymbols": {
+      "WalletFactory": [
+        664
+      ]
+    },
+    "id": 665,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 643,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:6"
+      },
+      {
+        "absolutePath": "/Users/jamesl/Google Drive/oasis/taptrust-wallet-contracts/contracts/ProxyWallet.sol",
+        "file": "./ProxyWallet.sol",
+        "id": 644,
+        "nodeType": "ImportDirective",
+        "scope": 665,
+        "sourceUnit": 548,
+        "src": "26:27:6",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [
+          547
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 664,
+        "linearizedBaseContracts": [
+          664
+        ],
+        "name": "WalletFactory",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "anonymous": false,
+            "documentation": null,
+            "id": 648,
+            "name": "WalletCreated",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 647,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 646,
+                  "indexed": true,
+                  "name": "wallet",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 648,
+                  "src": "103:22:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 645,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "103:7:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "102:24:6"
+            },
+            "src": "83:44:6"
+          },
+          {
+            "body": {
+              "id": 662,
+              "nodeType": "Block",
+              "src": "179:63:6",
+              "statements": [
+                {
+                  "eventCall": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "arguments": [
+                              {
+                                "argumentTypes": null,
+                                "id": 657,
+                                "name": "publicKey",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 650,
+                                "src": "226:9:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_bytes_memory_ptr",
+                                  "typeString": "bytes memory"
+                                }
+                              ],
+                              "id": 656,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "nodeType": "NewExpression",
+                              "src": "210:15:6",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_function_creation_nonpayable$_t_bytes_memory_ptr_$returns$_t_contract$_ProxyWallet_$547_$",
+                                "typeString": "function (bytes memory) returns (contract ProxyWallet)"
+                              },
+                              "typeName": {
+                                "contractScope": null,
+                                "id": 655,
+                                "name": "ProxyWallet",
+                                "nodeType": "UserDefinedTypeName",
+                                "referencedDeclaration": 547,
+                                "src": "214:11:6",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_contract$_ProxyWallet_$547",
+                                  "typeString": "contract ProxyWallet"
+                                }
+                              }
+                            },
+                            "id": 658,
+                            "isConstant": false,
+                            "isLValue": false,
+                            "isPure": false,
+                            "kind": "functionCall",
+                            "lValueRequested": false,
+                            "names": [],
+                            "nodeType": "FunctionCall",
+                            "src": "210:26:6",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_contract$_ProxyWallet_$547",
+                              "typeString": "contract ProxyWallet"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_contract$_ProxyWallet_$547",
+                              "typeString": "contract ProxyWallet"
+                            }
+                          ],
+                          "id": 654,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "nodeType": "ElementaryTypeNameExpression",
+                          "src": "202:7:6",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_address_$",
+                            "typeString": "type(address)"
+                          },
+                          "typeName": "address"
+                        },
+                        "id": 659,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "typeConversion",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "202:35:6",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "id": 653,
+                      "name": "WalletCreated",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 648,
+                      "src": "188:13:6",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_event_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address)"
+                      }
+                    },
+                    "id": 660,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "188:50:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 661,
+                  "nodeType": "EmitStatement",
+                  "src": "183:55:6"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 663,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "createNewWallet",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 651,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 650,
+                  "name": "publicKey",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 663,
+                  "src": "155:15:6",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 649,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "155:5:6",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "154:17:6"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 652,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "179:0:6"
+            },
+            "scope": 664,
+            "src": "130:112:6",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 665,
+        "src": "55:189:6"
+      }
+    ],
+    "src": "0:244:6"
+  },
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "wallet",
+          "type": "address"
+        }
+      ],
+      "name": "WalletCreated",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "publicKey",
+          "type": "bytes"
+        }
+      ],
+      "name": "createNewWallet",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506114ba806100206000396000f300608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063aeef482314610046575b600080fd5b34801561005257600080fd5b506100ad600480360381019080803590602001908201803590602001908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505091929192905050506100af565b005b806100b8610189565b8080602001828103825283818151815260200191508051906020019080838360005b838110156100f55780820151818401526020810190506100da565b50505050905090810190601f1680156101225780820380516001836020036101000a031916815260200191505b5092505050604051809103906000f080158015610143573d6000803e3d6000fd5b5073ffffffffffffffffffffffffffffffffffffffff167f234cf33b32239d80b54161e2396c80cdeaf4d34161300e54d8bc01eb7c0ea55360405160405180910390a250565b6040516112f58061019a83390190560060806040523480156200001157600080fd5b50604051620012f5380380620012f583398101806040528101908080518201929190505050604081511415156200004757600080fd5b80600090805190602001906200005f9291906200006e565b5060018081905550506200011d565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10620000b157805160ff1916838001178555620000e2565b82800160010185558215620000e2579182015b82811115620000e1578251825591602001919060010190620000c4565b5b509050620000f19190620000f5565b5090565b6200011a91905b8082111562000116576000816000905550600101620000fc565b5090565b90565b6111c8806200012d6000396000f30060806040526004361061006d576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063098190d31461006f57806387d692071461013c5780639f2ce30f14610185578063d69c3d3014610215578063ec72b0ad14610240575b005b34801561007b57600080fd5b5061013a600480360381019080803590602001909291908035906020019092919080359060200190929190803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290505050610337565b005b34801561014857600080fd5b5061016b6004803603810190808035600019169060200190929190505050610850565b604051808215151515815260200191505060405180910390f35b34801561019157600080fd5b5061019a610870565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156101da5780820151818401526020810190506101bf565b50505050905090810190601f1680156102075780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561022157600080fd5b5061022a61090e565b6040518082815260200191505060405180910390f35b34801561024c57600080fd5b50610335600480360381019080803590602001909291908035906020019092919080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290505050610914565b005b84848460405160200180848152602001838152602001828152602001807f6368616e67655075626c69634b65790000000000000000000000000000000000815250600f0193505050506040516020818303038152906040528186868660008060005a92506103ae848661105690919063ffffffff16565b3073ffffffffffffffffffffffffffffffffffffffff1631101515156103d357600080fd5b843a1480156103e25750838310155b15156103ed57600080fd5b60008614806103fd575085600154145b151561040857600080fd5b876040518082805190602001908083835b60208310151561043e5780518252602082019150602081019050602083039250610419565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405180910390206000191673__ECRecovery____________________________63918a15cf90916040518263ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180826000191660001916815260200191505060206040518083038186803b1580156104e357600080fd5b505af41580156104f7573d6000803e3d6000fd5b505050506040513d602081101561050d57600080fd5b81019080805190602001909291905050509150816000191673__ECRecovery____________________________6319045a259091896040518363ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180836000191660001916815260200180602001828103825283818151815260200191508051906020019080838360005b838110156105bb5780820151818401526020810190506105a0565b50505050905090810190601f1680156105e85780820380516001836020036101000a031916815260200191505b50935050505060206040518083038186803b15801561060657600080fd5b505af415801561061a573d6000803e3d6000fd5b505050506040513d602081101561063057600080fd5b81019080805190602001909291905050509050600060405180828054600181600116156101000203166002900480156106a05780601f1061067e5761010080835404028352918201916106a0565b820191906000526020600020905b81548152906001019060200180831161068c575b505091505060405180910390206001900473ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415156106ea57600080fd5b60008614156107615760026000836000191660001916815260200190815260200160002060009054906101000a900460ff1615151561072857600080fd5b600160026000846000191660001916815260200190815260200160002060006101000a81548160ff021916908315150217905550610774565b6001600081548092919060010191905055505b60408a5114151561078457600080fd5b896000908051906020019061079a9291906110f7565b507f24d7290cae26258bf6b056cf0630e7b5ef7f56fdec5dd3382581a7986c3a36e98a6040518080602001828103825283818151815260200191508051906020019080838360005b838110156107fd5780820151818401526020810190506107e2565b50505050905090810190601f16801561082a5780820380516001836020036101000a031916815260200191505b509250505060405180910390a1610841838661108e565b50505050505050505050505050565b60026020528060005260406000206000915054906101000a900460ff1681565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156109065780601f106108db57610100808354040283529160200191610906565b820191906000526020600020905b8154815290600101906020018083116108e957829003601f168201915b505050505081565b60015481565b868686868686604051602001808781526020018681526020018581526020018473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c0100000000000000000000000002815260140183815260200182805190602001908083835b6020831015156109ab5780518252602082019150602081019050602083039250610986565b6001836020036101000a038019825116818451168082178552505050505050905001807f73656e645472616e73616374696f6e0000000000000000000000000000000000815250600f0196505050505050506040516020818303038152906040528188888860008060005a9250610a2b848661105690919063ffffffff16565b3073ffffffffffffffffffffffffffffffffffffffff163110151515610a5057600080fd5b843a148015610a5f5750838310155b1515610a6a57600080fd5b6000861480610a7a575085600154145b1515610a8557600080fd5b876040518082805190602001908083835b602083101515610abb5780518252602082019150602081019050602083039250610a96565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405180910390206000191673__ECRecovery____________________________63918a15cf90916040518263ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180826000191660001916815260200191505060206040518083038186803b158015610b6057600080fd5b505af4158015610b74573d6000803e3d6000fd5b505050506040513d6020811015610b8a57600080fd5b81019080805190602001909291905050509150816000191673__ECRecovery____________________________6319045a259091896040518363ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180836000191660001916815260200180602001828103825283818151815260200191508051906020019080838360005b83811015610c38578082015181840152602081019050610c1d565b50505050905090810190601f168015610c655780820380516001836020036101000a031916815260200191505b50935050505060206040518083038186803b158015610c8357600080fd5b505af4158015610c97573d6000803e3d6000fd5b505050506040513d6020811015610cad57600080fd5b8101908080519060200190929190505050905060006040518082805460018160011615610100020316600290048015610d1d5780601f10610cfb576101008083540402835291820191610d1d565b820191906000526020600020905b815481529060010190602001808311610d09575b505091505060405180910390206001900473ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16141515610d6757600080fd5b6000861415610dde5760026000836000191660001916815260200190815260200160002060009054906101000a900460ff16151515610da557600080fd5b600160026000846000191660001916815260200190815260200160002060006101000a81548160ff021916908315150217905550610df1565b6001600081548092919060010191905055505b8b73ffffffffffffffffffffffffffffffffffffffff168b6152088f03908c60405180828051906020019080838360005b83811015610e3d578082015181840152602081019050610e22565b50505050905090810190601f168015610e6a5780820380516001836020036101000a031916815260200191505b50915050600060405180830381858888f1935050505015610f62577fecab3de0c5f272cfe8e64c31e8ebf2d65491d411a8fc9010fe05aa2534f40a7d8c8c8c604051808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200183815260200180602001828103825283818151815260200191508051906020019080838360005b83811015610f21578082015181840152602081019050610f06565b50505050905090810190601f168015610f4e5780820380516001836020036101000a031916815260200191505b5094505050505060405180910390a161103b565b7f8091ecaaa54ebb82e02d36c2c336528e0fcb9b3430fc1291ac88295032b9c2638c8c8c604051808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200183815260200180602001828103825283818151815260200191508051906020019080838360005b83811015610ffe578082015181840152602081019050610fe3565b50505050905090810190601f16801561102b5780820380516001836020036101000a031916815260200191505b5094505050505060405180910390a15b611045838661108e565b505050505050505050505050505050565b6000808314156110695760009050611088565b818302905081838281151561107a57fe5b0414151561108457fe5b8090505b92915050565b5a82039150615208820191503373ffffffffffffffffffffffffffffffffffffffff166108fc6110c7838561105690919063ffffffff16565b9081150290604051600060405180830381858888f193505050501580156110f2573d6000803e3d6000fd5b505050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061113857805160ff1916838001178555611166565b82800160010185558215611166579182015b8281111561116557825182559160200191906001019061114a565b5b5090506111739190611177565b5090565b61119991905b8082111561119557600081600090555060010161117d565b5090565b905600a165627a7a723058207edd30140959071a37cf5330327f833f5d0f448981e75fe858a35798c4af870b0029a165627a7a7230582040bc78055e05c5fe1cc3bc33800f81d35794feacc9dac1d24969e1c24eb2e81e0029",
+  "deployedBytecode": "0x608060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063aeef482314610046575b600080fd5b34801561005257600080fd5b506100ad600480360381019080803590602001908201803590602001908080601f01602080910402602001604051908101604052809392919081815260200183838082843782019150505050505091929192905050506100af565b005b806100b8610189565b8080602001828103825283818151815260200191508051906020019080838360005b838110156100f55780820151818401526020810190506100da565b50505050905090810190601f1680156101225780820380516001836020036101000a031916815260200191505b5092505050604051809103906000f080158015610143573d6000803e3d6000fd5b5073ffffffffffffffffffffffffffffffffffffffff167f234cf33b32239d80b54161e2396c80cdeaf4d34161300e54d8bc01eb7c0ea55360405160405180910390a250565b6040516112f58061019a83390190560060806040523480156200001157600080fd5b50604051620012f5380380620012f583398101806040528101908080518201929190505050604081511415156200004757600080fd5b80600090805190602001906200005f9291906200006e565b5060018081905550506200011d565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f10620000b157805160ff1916838001178555620000e2565b82800160010185558215620000e2579182015b82811115620000e1578251825591602001919060010190620000c4565b5b509050620000f19190620000f5565b5090565b6200011a91905b8082111562000116576000816000905550600101620000fc565b5090565b90565b6111c8806200012d6000396000f30060806040526004361061006d576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff168063098190d31461006f57806387d692071461013c5780639f2ce30f14610185578063d69c3d3014610215578063ec72b0ad14610240575b005b34801561007b57600080fd5b5061013a600480360381019080803590602001909291908035906020019092919080359060200190929190803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290505050610337565b005b34801561014857600080fd5b5061016b6004803603810190808035600019169060200190929190505050610850565b604051808215151515815260200191505060405180910390f35b34801561019157600080fd5b5061019a610870565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156101da5780820151818401526020810190506101bf565b50505050905090810190601f1680156102075780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561022157600080fd5b5061022a61090e565b6040518082815260200191505060405180910390f35b34801561024c57600080fd5b50610335600480360381019080803590602001909291908035906020019092919080359060200190929190803573ffffffffffffffffffffffffffffffffffffffff16906020019092919080359060200190929190803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509192919290505050610914565b005b84848460405160200180848152602001838152602001828152602001807f6368616e67655075626c69634b65790000000000000000000000000000000000815250600f0193505050506040516020818303038152906040528186868660008060005a92506103ae848661105690919063ffffffff16565b3073ffffffffffffffffffffffffffffffffffffffff1631101515156103d357600080fd5b843a1480156103e25750838310155b15156103ed57600080fd5b60008614806103fd575085600154145b151561040857600080fd5b876040518082805190602001908083835b60208310151561043e5780518252602082019150602081019050602083039250610419565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405180910390206000191673__ECRecovery____________________________63918a15cf90916040518263ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180826000191660001916815260200191505060206040518083038186803b1580156104e357600080fd5b505af41580156104f7573d6000803e3d6000fd5b505050506040513d602081101561050d57600080fd5b81019080805190602001909291905050509150816000191673__ECRecovery____________________________6319045a259091896040518363ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180836000191660001916815260200180602001828103825283818151815260200191508051906020019080838360005b838110156105bb5780820151818401526020810190506105a0565b50505050905090810190601f1680156105e85780820380516001836020036101000a031916815260200191505b50935050505060206040518083038186803b15801561060657600080fd5b505af415801561061a573d6000803e3d6000fd5b505050506040513d602081101561063057600080fd5b81019080805190602001909291905050509050600060405180828054600181600116156101000203166002900480156106a05780601f1061067e5761010080835404028352918201916106a0565b820191906000526020600020905b81548152906001019060200180831161068c575b505091505060405180910390206001900473ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff161415156106ea57600080fd5b60008614156107615760026000836000191660001916815260200190815260200160002060009054906101000a900460ff1615151561072857600080fd5b600160026000846000191660001916815260200190815260200160002060006101000a81548160ff021916908315150217905550610774565b6001600081548092919060010191905055505b60408a5114151561078457600080fd5b896000908051906020019061079a9291906110f7565b507f24d7290cae26258bf6b056cf0630e7b5ef7f56fdec5dd3382581a7986c3a36e98a6040518080602001828103825283818151815260200191508051906020019080838360005b838110156107fd5780820151818401526020810190506107e2565b50505050905090810190601f16801561082a5780820380516001836020036101000a031916815260200191505b509250505060405180910390a1610841838661108e565b50505050505050505050505050565b60026020528060005260406000206000915054906101000a900460ff1681565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156109065780601f106108db57610100808354040283529160200191610906565b820191906000526020600020905b8154815290600101906020018083116108e957829003601f168201915b505050505081565b60015481565b868686868686604051602001808781526020018681526020018581526020018473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166c0100000000000000000000000002815260140183815260200182805190602001908083835b6020831015156109ab5780518252602082019150602081019050602083039250610986565b6001836020036101000a038019825116818451168082178552505050505050905001807f73656e645472616e73616374696f6e0000000000000000000000000000000000815250600f0196505050505050506040516020818303038152906040528188888860008060005a9250610a2b848661105690919063ffffffff16565b3073ffffffffffffffffffffffffffffffffffffffff163110151515610a5057600080fd5b843a148015610a5f5750838310155b1515610a6a57600080fd5b6000861480610a7a575085600154145b1515610a8557600080fd5b876040518082805190602001908083835b602083101515610abb5780518252602082019150602081019050602083039250610a96565b6001836020036101000a03801982511681845116808217855250505050505090500191505060405180910390206000191673__ECRecovery____________________________63918a15cf90916040518263ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180826000191660001916815260200191505060206040518083038186803b158015610b6057600080fd5b505af4158015610b74573d6000803e3d6000fd5b505050506040513d6020811015610b8a57600080fd5b81019080805190602001909291905050509150816000191673__ECRecovery____________________________6319045a259091896040518363ffffffff167c010000000000000000000000000000000000000000000000000000000002815260040180836000191660001916815260200180602001828103825283818151815260200191508051906020019080838360005b83811015610c38578082015181840152602081019050610c1d565b50505050905090810190601f168015610c655780820380516001836020036101000a031916815260200191505b50935050505060206040518083038186803b158015610c8357600080fd5b505af4158015610c97573d6000803e3d6000fd5b505050506040513d6020811015610cad57600080fd5b8101908080519060200190929190505050905060006040518082805460018160011615610100020316600290048015610d1d5780601f10610cfb576101008083540402835291820191610d1d565b820191906000526020600020905b815481529060010190602001808311610d09575b505091505060405180910390206001900473ffffffffffffffffffffffffffffffffffffffff168173ffffffffffffffffffffffffffffffffffffffff16141515610d6757600080fd5b6000861415610dde5760026000836000191660001916815260200190815260200160002060009054906101000a900460ff16151515610da557600080fd5b600160026000846000191660001916815260200190815260200160002060006101000a81548160ff021916908315150217905550610df1565b6001600081548092919060010191905055505b8b73ffffffffffffffffffffffffffffffffffffffff168b6152088f03908c60405180828051906020019080838360005b83811015610e3d578082015181840152602081019050610e22565b50505050905090810190601f168015610e6a5780820380516001836020036101000a031916815260200191505b50915050600060405180830381858888f1935050505015610f62577fecab3de0c5f272cfe8e64c31e8ebf2d65491d411a8fc9010fe05aa2534f40a7d8c8c8c604051808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200183815260200180602001828103825283818151815260200191508051906020019080838360005b83811015610f21578082015181840152602081019050610f06565b50505050905090810190601f168015610f4e5780820380516001836020036101000a031916815260200191505b5094505050505060405180910390a161103b565b7f8091ecaaa54ebb82e02d36c2c336528e0fcb9b3430fc1291ac88295032b9c2638c8c8c604051808473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200183815260200180602001828103825283818151815260200191508051906020019080838360005b83811015610ffe578082015181840152602081019050610fe3565b50505050905090810190601f16801561102b5780820380516001836020036101000a031916815260200191505b5094505050505060405180910390a15b611045838661108e565b505050505050505050505050505050565b6000808314156110695760009050611088565b818302905081838281151561107a57fe5b0414151561108457fe5b8090505b92915050565b5a82039150615208820191503373ffffffffffffffffffffffffffffffffffffffff166108fc6110c7838561105690919063ffffffff16565b9081150290604051600060405180830381858888f193505050501580156110f2573d6000803e3d6000fd5b505050565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061113857805160ff1916838001178555611166565b82800160010185558215611166579182015b8281111561116557825182559160200191906001019061114a565b5b5090506111739190611177565b5090565b61119991905b8082111561119557600081600090555060010161117d565b5090565b905600a165627a7a723058207edd30140959071a37cf5330327f833f5d0f448981e75fe858a35798c4af870b0029a165627a7a7230582040bc78055e05c5fe1cc3bc33800f81d35794feacc9dac1d24969e1c24eb2e81e0029",
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.25+commit.59dbf8f1.Emscripten.clang"
+  },
+  "contractName": "WalletFactory"
+}

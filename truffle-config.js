@@ -1,18 +1,39 @@
-/*
- * NB: since truffle-hdwallet-provider 0.0.5 you must wrap HDWallet providers in a 
- * function when declaring them. Failure to do so will cause commands to hang. ex:
- * ```
- * mainnet: {
- *     provider: function() { 
- *       return new HDWalletProvider(mnemonic, 'https://mainnet.infura.io/<infura-key>') 
- *     },
- *     network_id: '1',
- *     gas: 4500000,
- *     gasPrice: 10000000000,
- *   },
- */
+const HDWalletProvider = require("truffle-hdwallet-provider");
+
+// add your Oasis Devnet mnemonic here. Be sure to keep it secret!
+const MNEMONIC = 'junk human real manual destroy echo salon virus mule denial explain again';
+
+// mnemonic for Contract Kit local blockchain
+const CONTRACT_KIT_MNEMONIC = 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat';
 
 module.exports = {
-  // See <http://truffleframework.com/docs/advanced/configuration>
-  // to customize your Truffle configuration!
+  networks: {
+    // Oasis Devnet
+    oasis: {
+      provider: function () {
+        return new HDWalletProvider(MNEMONIC, "https://web3.oasiscloud.io");
+      },
+      network_id: "42261"
+    },
+
+    // Contract Kit local chain
+    development: {
+      provider: function () {
+        return new HDWalletProvider(CONTRACT_KIT_MNEMONIC, "http://localhost:8545", 0, 10);
+      },
+      network_id: "*"
+    },
+  },
+  compilers: {
+    external: {
+      command: "./node_modules/.bin/oasis-compile",
+      targets: [{
+        path: "./.oasis-build/*.json"
+      }]
+    },
+    solc: {
+        version: "0.4.24"
+    }
+  }
 };
+
