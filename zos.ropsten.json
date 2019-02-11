@@ -459,7 +459,22 @@
       "deployedBytecodeHash": "05232a8afc6dc34a2ed854858a11b0701dc1a8e86efe82028c4ef2b4e77a23bd"
     }
   },
-  "proxies": {},
+  "proxies": {
+    "taptrust-wallet-contracts/VouchersRegistry": [
+      {
+        "address": "0x698375098f6147dd7c5c4977bdc0c300e4856ba6",
+        "version": "0.1.0",
+        "implementation": "0xc84280d7391804268d273b0fd8da7df5a37a06d1"
+      }
+    ],
+    "taptrust-wallet-contracts/WalletFactory": [
+      {
+        "address": "0xe111577f52389a845ee432c99ba1bf86fa08da00",
+        "version": "0.1.0",
+        "implementation": "0x0820c70d1b68285d9987e462ecac29f85306eec0"
+      }
+    ]
+  },
   "zosversion": "2",
   "version": "0.1.0"
 }
